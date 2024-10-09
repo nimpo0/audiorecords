@@ -58,8 +58,8 @@ public class Menu {
         commandMap.put(4, new CalculateDuration(collection));
         commandMap.put(5, new SortingByStyle(collection));
         commandMap.put(6, new FindComposition(collection, scanner));
-        commandMap.put(7, new SaveCollectionCommand(collection, scanner));
-        commandMap.put(8, new LoadCollectionCommand(collection, scanner));
+        commandMap.put(7, new SaveCollection(collection, scanner));
+        commandMap.put(8, new LoadFromFile(collection, scanner));
     }
 
     private int getUserChoice() {

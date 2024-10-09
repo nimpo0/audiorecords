@@ -1,7 +1,6 @@
 package commands;
 
 import composition.ComposCollection;
-import mainPackage.Command;
 
 public class DisplayComposition implements Command {
     private ComposCollection collection;

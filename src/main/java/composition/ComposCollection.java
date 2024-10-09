@@ -18,7 +18,7 @@ public class ComposCollection {
         compositions.add(composition);
     }
 
-    public void removeComposition(Composition composition) {
+    public void deleteComposition(Composition composition) {
         compositions.remove(composition);
     }
 

@@ -1,5 +1,7 @@
 package mainPackage;
 
+import commands.Command;
+
 public class Invoker {
     public void executeCommand(Command command) {
         if (command != null) {
