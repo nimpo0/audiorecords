@@ -24,7 +24,7 @@ public class ComposCollection {
 
     public Composition findCompositionByName(String name) {
         for (Composition comp : compositions) {
-            if (comp.getCompositionName().equalsIgnoreCase(name)) {
+            if (comp.getCompositionName().equals(name)) {
                 return comp;
             }
         }

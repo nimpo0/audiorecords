@@ -12,4 +12,9 @@ public class SortingByStyle implements Command {
     @Override
     public void execute() {
     }
+
+    @Override
+    public String printInfo() {
+        return "Сортувати композиції за стилем";
+    }
 }

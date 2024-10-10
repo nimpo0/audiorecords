@@ -27,4 +27,9 @@ public class CalculateDuration implements Command {
 
         System.out.println("Загальна тривалість композицій у збірці: " + minutes + " хв " + seconds + " сек.");
     }
+
+    @Override
+    public String printInfo() {
+        return "Порахувати тривалість збірки";
+    }
 }

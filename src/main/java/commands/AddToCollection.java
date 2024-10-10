@@ -36,6 +36,11 @@ public class AddToCollection implements Command {
         System.out.println("Композицію успішно додано до колекції.");
     }
 
+    @Override
+    public String printInfo() {
+        return "Додати нову композицію в збірку";
+    }
+
     private int getDurationNum(){
         int dur = -1;
         while (dur <= 0) {

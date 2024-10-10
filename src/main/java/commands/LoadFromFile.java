@@ -15,4 +15,9 @@ public class LoadFromFile implements Command {
     @Override
     public void execute() {
     }
+
+    @Override
+    public String printInfo() {
+        return "Завантажити збірку з диска";
+    }
 }

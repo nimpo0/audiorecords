@@ -24,13 +24,18 @@ public class DeleteFromCollection implements Command {
         System.out.println("Введіть назву композиції, яку бажаєте видалити:");
         String name = scanner.nextLine();
 
-        Composition toRemove = collection.findCompositionByName(name);
+        Composition delete = collection.findCompositionByName(name);
 
-        if (toRemove != null) {
-            collection.deleteComposition(toRemove);
+        if (delete != null) {
+            collection.deleteComposition(delete);
             System.out.println("Композицію \"" + name + "\" успішно видалено з колекції.");
         } else {
             System.out.println("Композицію з назвою \"" + name + "\" не знайдено в колекції.");
         }
+    }
+
+    @Override
+    public String printInfo() {
+        return "Видалити композицію";
     }
 }
