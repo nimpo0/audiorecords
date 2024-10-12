@@ -18,6 +18,7 @@ public class Composition implements Serializable {
         this.author = author;
         this.composDuration = compositionDuration;
         this.lyrics = lyrics;
+        System.out.println("Створено композицію: " + compositionName);
     }
 
     public String getCompositionName() {
@@ -38,5 +39,4 @@ public class Composition implements Serializable {
         String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
         return comp + separator;
     }
-
 }

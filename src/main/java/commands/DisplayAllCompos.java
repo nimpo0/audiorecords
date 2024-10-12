@@ -2,26 +2,27 @@ package commands;
 
 import composition.ComposCollection;
 
-public class DisplayCompositions implements Command {
-    private ComposCollection collection;
+public class DisplayAllCompos implements Command {
+    private ComposCollection allCompositions;
 
-    public DisplayCompositions(ComposCollection collection) {
-        this.collection = collection;
+    public DisplayAllCompos(ComposCollection allCompositions) {
+        this.allCompositions = allCompositions;
     }
 
     @Override
     public void execute() {
-        if (collection.isEmpty()) {
-            System.out.println("Колекція порожня.");
-        }
-        else {
+        if (allCompositions.isAllEmpty()) {
+            System.out.println("Немає ніяких композицій.");
+        } else {
             String header = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
                     "Назва", "Стиль", "Автор", "Тривалість", "Текст");
             String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
             System.out.println(separator);
             System.out.print(header);
             System.out.println(separator);
-            collection.displayAllCompositions();
+
+            // Виклик методу для виведення всіх композицій із колекції
+            allCompositions.displayAllCompositions();
         }
     }
 

@@ -19,7 +19,7 @@ public class FindCompositions implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Композицій нема у збірці.");
+            System.out.println("Збірка порожня.");
             return;
         }
 

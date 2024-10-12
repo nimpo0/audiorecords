@@ -18,7 +18,7 @@ public class SortingByStyle implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Колекція порожня. Немає композицій для сортування.");
+            System.out.println("Збірка порожня.");
             return;
         }
 
@@ -27,17 +27,19 @@ public class SortingByStyle implements Command {
         if (choice == 1) {
             collection.getCompositions().sort(Comparator.comparing(Composition::getStyle));
             System.out.println("Композиції відсортовано за алфавітом.");
+            System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
         }
         else if (choice == 2) {
             collection.getCompositions().sort(Comparator.comparing(Composition::getStyle).reversed());
             System.out.println("Композиції відсортовано проти алфавіту.");
+            System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
         }
         else {
-            System.out.println("Невірно, будь ласка, спробуйте ще раз.");
+            System.out.println("Неправильно, будь ласка, спробуйте ще раз.");
             return;
         }
 
-        collection.displayAllCompositions();
+        collection.displayCompositions();
     }
 
     @Override

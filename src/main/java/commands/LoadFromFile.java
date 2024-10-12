@@ -23,7 +23,6 @@ public class LoadFromFile implements Command {
         try (FileInputStream fileIn = new FileInputStream(filename);
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
             ComposCollection loadedCollection = (ComposCollection) in.readObject();
-            collection.getCompositions().clear();
             collection.getCompositions().addAll(loadedCollection.getCompositions());
             System.out.println("Збірку успішно завантажено з файлу \"" + filename + "\".");
         } catch (IOException | ClassNotFoundException e) {

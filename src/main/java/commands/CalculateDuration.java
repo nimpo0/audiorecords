@@ -13,7 +13,7 @@ public class CalculateDuration implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Колекція порожня.");
+            System.out.println("Збірка порожня.");
             return;
         }
 

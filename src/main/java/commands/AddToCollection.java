@@ -7,54 +7,51 @@ import java.util.Scanner;
 
 public class AddToCollection implements Command {
     private ComposCollection collection;
+    private ComposCollection allCompositions;
     private Scanner scanner;
 
-    public AddToCollection(ComposCollection collection, Scanner scanner) {
+    public AddToCollection(ComposCollection collection, ComposCollection allCompositions, Scanner scanner) {
         this.collection = collection;
+        this.allCompositions = allCompositions;
         this.scanner = scanner;
     }
 
     @Override
     public void execute() {
-        System.out.println("Введіть назву композиції:");
+        if (allCompositions.isAllEmpty()) {
+            System.out.println("Немає доступних композицій для додавання.");
+            return;
+        }
+
+        System.out.println("Доступні композиції для додавання:");
+        boolean hasCompos = false;
+        for (Composition comp : allCompositions.getAllCompositions()) {
+            if (collection.containsComposition(comp)) {
+                System.out.println("- " + comp.getCompositionName());
+                hasCompos = true;
+            }
+        }
+
+        if (!hasCompos) {
+            System.out.println("Всі композиції вже додані до збірки.");
+            return;
+        }
+
+        System.out.println("Введіть назву композиції, яку бажаєте додати до збірки:");
         String name = scanner.nextLine();
 
-        System.out.println("Введіть стиль композиції:");
-        String style = scanner.nextLine();
+        Composition compositionToAdd = allCompositions.findInAllCompositions(name);
+        if (compositionToAdd != null && collection.containsComposition(compositionToAdd)) {
+            collection.addComposition(compositionToAdd);
+            System.out.println("Композицію \"" + name + "\" успішно додано до збірки.");
+        } else {
+            System.out.println("Композицію не знайдено або вона вже є у збірці.");
+        }
 
-        System.out.println("Введіть ім'я автора:");
-        String author = scanner.nextLine();
-
-        int duration = getDurationNum();
-
-        System.out.println("Введіть текст пісні:");
-        String lyrics = scanner.nextLine();
-
-        Composition newComposition = new Composition(name, style, author, duration, lyrics);
-        collection.addComposition(newComposition);
-
-        System.out.println("Композицію успішно додано до збірки.");
     }
 
     @Override
     public String printInfo() {
-        return "Додати нову композицію в збірку";
-    }
-
-    private int getDurationNum(){
-        int dur = -1;
-        while (dur <= 0) {
-            System.out.println("Введіть тривалість композиції (у секундах):");
-            try {
-                String input = scanner.nextLine();
-                dur = Integer.parseInt(input);
-                if (dur <= 0) {
-                    System.out.println("Тривалість повинна бути додатним числом. Спробуйте ще раз.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Невірний формат числа. Спробуйте ще раз.");
-            }
-        }
-        return dur;
+        return "Додати композицію до збірки";
     }
 }

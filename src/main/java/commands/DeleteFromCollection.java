@@ -17,7 +17,7 @@ public class DeleteFromCollection implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Колекція порожня.");
+            System.out.println("Збірка порожня.");
             return;
         }
 
@@ -30,7 +30,7 @@ public class DeleteFromCollection implements Command {
             collection.deleteComposition(delete);
             System.out.println("Композицію \"" + name + "\" успішно видалено з колекції.");
         } else {
-            System.out.println("Композицію з назвою \"" + name + "\" не знайдено в колекції.");
+            System.out.println("Композицію  \"" + name + "\" не знайдено в колекції.");
         }
     }
 
