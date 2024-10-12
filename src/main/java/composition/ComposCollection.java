@@ -1,9 +1,13 @@
 package composition;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComposCollection {
+public class ComposCollection implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private List<Composition> compositions;
 
     public ComposCollection() {
@@ -39,7 +43,6 @@ public class ComposCollection {
         if (compositions.isEmpty()) {
             System.out.println("Колекція порожня.");
         } else {
-            System.out.println("Список композицій у збірці:");
             for (Composition comp : compositions) {
                 System.out.println(comp);
             }

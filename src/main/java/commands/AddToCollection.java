@@ -33,7 +33,7 @@ public class AddToCollection implements Command {
         Composition newComposition = new Composition(name, style, author, duration, lyrics);
         collection.addComposition(newComposition);
 
-        System.out.println("Композицію успішно додано до колекції.");
+        System.out.println("Композицію успішно додано до збірки.");
     }
 
     @Override

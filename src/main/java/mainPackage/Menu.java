@@ -36,7 +36,8 @@ public class Menu {
     }
 
     private void printMenu() {
-        System.out.println("\n\t=== МЕНЮ ===");
+        System.out.println("\n\t\t\t\t  === МЕНЮ ===");
+        System.out.println("==================================================");
 
         List<Integer> keys = new ArrayList<>(commandMap.keySet());
 
@@ -46,6 +47,7 @@ public class Menu {
         }
 
         System.out.println("\t0. Вихід");
+        System.out.println("==================================================");
         System.out.print("Оберіть опцію (1-8): ");
     }
 
@@ -54,7 +56,7 @@ public class Menu {
         commandMap.put(2, new DeleteFromCollection(collection, scanner));
         commandMap.put(3, new DisplayCompositions(collection));
         commandMap.put(4, new CalculateDuration(collection));
-        commandMap.put(5, new SortingByStyle(collection));
+        commandMap.put(5, new SortingByStyle(collection, scanner));
         commandMap.put(6, new FindCompositions(collection, scanner));
         commandMap.put(7, new SaveToFile(collection, scanner));
         commandMap.put(8, new LoadFromFile(collection, scanner));
