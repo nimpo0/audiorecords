@@ -17,25 +17,25 @@ public class DeleteFromCollection implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Збірка порожня.");
+            System.out.println("The collection is empty.");
             return;
         }
 
-        System.out.println("Введіть назву композиції, яку бажаєте видалити:");
+        System.out.println("Enter the name of the composition you want to delete:");
         String name = scanner.nextLine();
 
         Composition delete = collection.findCompositionByName(name);
 
         if (delete != null) {
             collection.deleteComposition(delete);
-            System.out.println("Композицію \"" + name + "\" успішно видалено з колекції.");
+            System.out.println("Composition \"" + name + "\" successfully deleted from the collection.");
         } else {
-            System.out.println("Композицію  \"" + name + "\" не знайдено в колекції.");
+            System.out.println("Composition \"" + name + "\" not found in the collection.");
         }
     }
 
     @Override
     public String printInfo() {
-        return "Видалити композицію";
+        return "Delete a composition.";
     }
 }

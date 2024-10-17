@@ -3,17 +3,15 @@ package commands;
 import composition.ComposCollection;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Scanner;
 
 public class LoadFromFile implements Command {
     private ComposCollection collection;
-    private Scanner scanner;
 
-    public LoadFromFile(ComposCollection collection, Scanner scanner) {
+    public LoadFromFile(ComposCollection collection) {
         this.collection = collection;
-        this.scanner = scanner;
     }
 
     @Override
@@ -24,13 +22,17 @@ public class LoadFromFile implements Command {
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
             ComposCollection loadedCollection = (ComposCollection) in.readObject();
             collection.getCompositions().addAll(loadedCollection.getCompositions());
-            System.out.println("Збірку успішно завантажено з файлу \"" + filename + "\".");
+            System.out.println("Collection successfully loaded from file \"" + filename + "\".");
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filename);
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Помилка при завантаженні файлу.");
+            System.out.println("Error while loading the file.");
         }
     }
+
+
     @Override
     public String printInfo() {
-        return "Завантажити збірку з диска";
+        return "Load the collection from disk.";
     }
 }

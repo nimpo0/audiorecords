@@ -19,39 +19,38 @@ public class AddToCollection implements Command {
     @Override
     public void execute() {
         if (allCompositions.isAllEmpty()) {
-            System.out.println("Немає доступних композицій для додавання.");
+            System.out.println("No available compositions to add.");
             return;
         }
 
-        System.out.println("Доступні композиції для додавання:");
+        System.out.println("Available compositions to add:");
         boolean hasCompos = false;
         for (Composition comp : allCompositions.getAllCompositions()) {
-            if (collection.containsComposition(comp)) {
+            if (!collection.containsComposition(comp)) {
                 System.out.println("- " + comp.getCompositionName());
                 hasCompos = true;
             }
         }
 
         if (!hasCompos) {
-            System.out.println("Всі композиції вже додані до збірки.");
+            System.out.println("All compositions are already added to the collection.");
             return;
         }
 
-        System.out.println("Введіть назву композиції, яку бажаєте додати до збірки:");
+        System.out.println("Enter the name of the composition you want to add to the collection:");
         String name = scanner.nextLine();
 
         Composition compositionToAdd = allCompositions.findInAllCompositions(name);
-        if (compositionToAdd != null && collection.containsComposition(compositionToAdd)) {
+        if (compositionToAdd != null) {
             collection.addComposition(compositionToAdd);
-            System.out.println("Композицію \"" + name + "\" успішно додано до збірки.");
+            System.out.println("Composition \"" + name + "\" successfully added to the collection.");
         } else {
-            System.out.println("Композицію не знайдено або вона вже є у збірці.");
+            System.out.println("Composition not found or it is already in the collection.");
         }
-
     }
 
     @Override
     public String printInfo() {
-        return "Додати композицію до збірки";
+        return "Add a composition to the collection.";
     }
 }

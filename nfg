@@ -1,8 +1,0 @@
-System.out.println("\t1. Додати нову композицію в збірку");
-            System.out.println("\t2. Видалити композицію");
-            System.out.println("\t3. Показати всі композиції");
-            System.out.println("\t4. Порахувати тривалість збірки");
-            System.out.println("\t5. Сортувати композиції за стилем");
-            System.out.println("\t6. Знайти композиції за діапазоном тривалості");
-            System.out.println("\t7. Зберегти збірку на диск");
-            System.out.println("\t8. Завантажити збірку з диска");

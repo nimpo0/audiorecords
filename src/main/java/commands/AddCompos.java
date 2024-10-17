@@ -16,42 +16,42 @@ public class AddCompos implements Command {
 
     @Override
     public void execute() {
-        System.out.println("Введіть назву композиції:");
+        System.out.println("Enter the composition name:");
         String name = scanner.nextLine();
 
-        System.out.println("Введіть стиль композиції:");
+        System.out.println("Enter the composition style:");
         String style = scanner.nextLine();
 
-        System.out.println("Введіть ім'я автора:");
+        System.out.println("Enter the author's name:");
         String author = scanner.nextLine();
 
         int duration = getDurationNum();
 
-        System.out.println("Введіть текст пісні:");
+        System.out.println("Enter the lyrics:");
         String lyrics = scanner.nextLine();
 
         Composition newComposition = new Composition(name, style, author, duration, lyrics);
         allCompos.addToAllCompositions(newComposition);
-        System.out.println("Композицію успішно додано.");
+        System.out.println("Composition successfully added.");
     }
 
     @Override
     public String printInfo() {
-        return "Додати нову композицію.";
+        return "Add a new composition.";
     }
 
     private int getDurationNum() {
         int dur = -1;
         while (dur <= 0) {
-            System.out.println("Введіть тривалість композиції (у секундах):");
+            System.out.println("Enter the composition duration (in seconds):");
             try {
                 String input = scanner.nextLine();
                 dur = Integer.parseInt(input);
                 if (dur <= 0) {
-                    System.out.println("Тривалість повинна бути додатним числом. Спробуйте ще раз.");
+                    System.out.println("Duration must be a positive number. Please try again.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Неправильно, будь ласка, введіть ціле число.");
+                System.out.println("Invalid input, please enter a whole number.");
             }
         }
         return dur;

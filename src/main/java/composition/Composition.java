@@ -1,11 +1,9 @@
 package composition;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 public class Composition implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+
     private String compositionName;
     private String style;
     private String author;
@@ -18,7 +16,7 @@ public class Composition implements Serializable {
         this.author = author;
         this.composDuration = compositionDuration;
         this.lyrics = lyrics;
-        System.out.println("Створено композицію: " + compositionName);
+        System.out.println("Composition is created: " + compositionName);
     }
 
     public String getCompositionName() {
@@ -33,10 +31,19 @@ public class Composition implements Serializable {
         return composDuration;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getLyrics() {
+        return lyrics;
+    }
+
     public String toString() {
         String comp = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
-                compositionName, style, author, composDuration + " с", lyrics);
+                compositionName, style, author, composDuration + " s", lyrics);
         String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
         return comp + separator;
     }
+
 }

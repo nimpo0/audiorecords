@@ -13,7 +13,7 @@ public class CalculateDuration implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Збірка порожня.");
+            System.out.println("The collection is empty.");
             return;
         }
 
@@ -25,11 +25,11 @@ public class CalculateDuration implements Command {
         int minutes = totalDuration / 60;
         int seconds = totalDuration % 60;
 
-        System.out.println("Загальна тривалість композицій у збірці: " + minutes + " хв " + seconds + " сек.");
+        System.out.println("Total duration of compositions in the collection: " + minutes + " min " + seconds + " sec.");
     }
 
     @Override
     public String printInfo() {
-        return "Порахувати тривалість збірки";
+        return "Calculate the total duration of the collection.";
     }
 }

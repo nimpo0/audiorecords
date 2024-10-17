@@ -2,18 +2,16 @@ package commands;
 
 import composition.ComposCollection;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
 
 public class SaveToFile implements Command {
     private ComposCollection collection;
-    private Scanner scanner;
 
-    public SaveToFile(ComposCollection collection, Scanner scanner) {
+    public SaveToFile(ComposCollection collection) {
         this.collection = collection;
-        this.scanner = scanner;
     }
 
     @Override
@@ -23,14 +21,15 @@ public class SaveToFile implements Command {
         try (FileOutputStream fileOut = new FileOutputStream(filename);
              ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
             out.writeObject(collection);
-            System.out.println("Збірку успішно збережено у файл \"" + filename + "\".");
+            System.out.println("Collection successfully saved to file \"" + filename + "\".");
         } catch (IOException e) {
-            System.out.println("Помилка при збереженні файлу.");
+            System.out.println("Error while saving the file.");
         }
     }
 
     @Override
     public String printInfo() {
-        return "Зберегти збірку на диск";
+        return "Save the collection to disk.";
     }
 }
+

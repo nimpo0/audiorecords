@@ -1,13 +1,10 @@
 package composition;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComposCollection implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     private List<Composition> compositions;
     private List<Composition> allCompositions;
@@ -64,12 +61,12 @@ public class ComposCollection implements Serializable {
     }
 
     public boolean containsComposition(Composition composition) {
-        return !compositions.contains(composition);
+        return compositions.contains(composition);
     }
 
     public void displayCompositions() {
         if (compositions.isEmpty()) {
-            System.out.println("Збірка порожня.");
+            System.out.println("The collection is empty.");
         } else {
             for (Composition comp : compositions) {
                 System.out.println(comp);
@@ -79,7 +76,7 @@ public class ComposCollection implements Serializable {
 
     public void displayAllCompositions() {
         if (allCompositions.isEmpty()) {
-            System.out.println("Немає доступних композицій.");
+            System.out.println("No available compositions.");
         } else {
             for (Composition comp : allCompositions) {
                 System.out.println(comp);

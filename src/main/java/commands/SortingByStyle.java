@@ -18,24 +18,24 @@ public class SortingByStyle implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Збірка порожня.");
+            System.out.println("The collection is empty.");
             return;
         }
 
         int choice = getUserChoice();
 
         if (choice == 1) {
-            collection.getCompositions().sort(Comparator.comparing(Composition::getStyle));
-            System.out.println("Композиції відсортовано за алфавітом.");
+            collection.getCompositions().sort(Comparator.comparing(composition -> composition.getStyle()));
+            System.out.println("Compositions sorted alphabetically.");
             System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
         }
         else if (choice == 2) {
             collection.getCompositions().sort(Comparator.comparing(Composition::getStyle).reversed());
-            System.out.println("Композиції відсортовано проти алфавіту.");
+            System.out.println("Compositions sorted in reverse alphabetical order.");
             System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
         }
         else {
-            System.out.println("Неправильно, будь ласка, спробуйте ще раз.");
+            System.out.println("Invalid choice, please try again.");
             return;
         }
 
@@ -44,24 +44,24 @@ public class SortingByStyle implements Command {
 
     @Override
     public String printInfo() {
-        return "Сортувати композиції за стилем";
+        return "Sort compositions by style.";
     }
 
     private int getUserChoice() {
         int choice = -1;
         while (choice != 1 && choice != 2) {
-            System.out.println("Оберіть порядок сортування:");
-            System.out.println("1. За алфавітом");
-            System.out.println("2. Проти алфавіту");
+            System.out.println("Choose sorting order:");
+            System.out.println("1. Alphabetically");
+            System.out.println("2. In reverse alphabetical order");
 
             String input = scanner.nextLine();
             try {
                 choice = Integer.parseInt(input);
                 if (choice != 1 && choice != 2) {
-                    System.out.println("Неправильно, будь ласка, введіть 1 або 2.");
+                    System.out.println("Invalid input, please enter 1 or 2.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Неправильно, будь ласка, введіть ціле число.");
+                System.out.println("Invalid input, please enter a whole number.");
             }
         }
         return choice;

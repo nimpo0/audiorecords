@@ -12,22 +12,20 @@ public class DisplayAllCompos implements Command {
     @Override
     public void execute() {
         if (allCompositions.isAllEmpty()) {
-            System.out.println("Немає ніяких композицій.");
+            System.out.println("There are no compositions.");
         } else {
             String header = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
-                    "Назва", "Стиль", "Автор", "Тривалість", "Текст");
+                    "Title", "Style", "Author", "Duration", "Lyrics");
             String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
             System.out.println(separator);
             System.out.print(header);
             System.out.println(separator);
-
-            // Виклик методу для виведення всіх композицій із колекції
             allCompositions.displayAllCompositions();
         }
     }
 
     @Override
     public String printInfo() {
-        return "Показати всі композиції";
+        return "Show all compositions.";
     }
 }

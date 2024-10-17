@@ -12,11 +12,11 @@ public class DisplayCollection implements Command {
     @Override
     public void execute() {
         if (collection.isEmpty()) {
-            System.out.println("Збірка порожня.");
+            System.out.println("The collection is empty.");
         }
         else {
             String header = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
-                    "Назва", "Стиль", "Автор", "Тривалість", "Текст");
+                    "Title", "Style", "Author", "Duration", "Lyrics");
             String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
             System.out.println(separator);
             System.out.print(header);
@@ -27,6 +27,6 @@ public class DisplayCollection implements Command {
 
     @Override
     public String printInfo() {
-        return "Показати всі композиції із збірки";
+        return "Show all compositions from the collection.";
     }
 }
