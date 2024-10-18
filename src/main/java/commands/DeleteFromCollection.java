@@ -36,6 +36,6 @@ public class DeleteFromCollection implements Command {
 
     @Override
     public String printInfo() {
-        return "Delete a composition.";
+        return "Delete a composition from collection.";
     }
 }

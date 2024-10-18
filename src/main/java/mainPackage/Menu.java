@@ -36,7 +36,7 @@ public class Menu {
                     command.execute();
                     System.out.println("Command executed successfully.");
                 } catch (Exception e) {
-                    System.out.println("Error");
+                    System.out.println("Error with executing command");
                 }
             } else {
                 System.out.println("Invalid choice. Please try again.");
@@ -66,7 +66,7 @@ public class Menu {
         commandMap.put(5, new DisplayCollection(collection));
         commandMap.put(6, new CalculateDuration(collection));
         commandMap.put(7, new SortingByStyle(collection, scanner));
-        commandMap.put(8, new FindCompositions(collection, scanner));
+        commandMap.put(8, new FindCompositions(allCompositions, scanner));
         commandMap.put(9, new SaveToFile(collection));
         commandMap.put(10, new LoadFromFile(collection));
     }
@@ -82,7 +82,7 @@ public class Menu {
                     System.out.print("Invalid choice. Please enter a number between 0 and 10: ");
                 }
             } catch (NumberFormatException e) {
-                System.out.print("Invalid input, please enter a whole: ");
+                System.out.print("Invalid input, please enter a number: ");
             }
         }
     }

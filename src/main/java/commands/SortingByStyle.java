@@ -44,7 +44,7 @@ public class SortingByStyle implements Command {
 
     @Override
     public String printInfo() {
-        return "Sort compositions by style.";
+        return "Sort compositions by style in collection.";
     }
 
     private int getUserChoice() {

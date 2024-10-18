@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.Scanner;
 
 public class FindCompositions implements Command {
-    private ComposCollection collection;
+    private ComposCollection allCompos;
     private Scanner scanner;
 
-    public FindCompositions(ComposCollection collection, Scanner scanner) {
-        this.collection = collection;
+    public FindCompositions(ComposCollection allCompos, Scanner scanner) {
+        this.allCompos = allCompos;
         this.scanner = scanner;
     }
 
     @Override
     public void execute() {
-        if (collection.isEmpty()) {
+        if (allCompos.isAllEmpty()) {
             System.out.println("The collection is empty.");
             return;
         }
@@ -27,7 +27,7 @@ public class FindCompositions implements Command {
         int maxDuration = getMaxDuration(minDuration);
 
         List<Composition> foundCompos = new ArrayList<>();
-        for (Composition comp : collection.getCompositions()) {
+        for (Composition comp : allCompos.getAllCompositions()) {
             int duration = comp.getComposDuration();
             if (duration >= minDuration && duration <= maxDuration) {
                 foundCompos.add(comp);

@@ -19,12 +19,12 @@ public class FindCompositionsTest {
     private ByteArrayInputStream testIn;
     private ByteArrayOutputStream testOut;
 
-    private ComposCollection collection;
+    private ComposCollection allCompos;
     private FindCompositions findCompositions;
 
     @BeforeEach
     public void setUp() {
-        collection = new ComposCollection();
+        allCompos = new ComposCollection();
         testOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(testOut));
     }
@@ -40,7 +40,7 @@ public class FindCompositionsTest {
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
 
-        findCompositions = new FindCompositions(collection, scanner);
+        findCompositions = new FindCompositions(allCompos, scanner);
         findCompositions.execute();
 
         String output = testOut.toString();
@@ -51,13 +51,13 @@ public class FindCompositionsTest {
     @Test
     public void testInvalidMinDurationInput() {
         Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        collection.addComposition(comp);
+        allCompos.addComposition(comp);
 
         String userInput = "abc\n-10\n60\n600\n";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
 
-        findCompositions = new FindCompositions(collection, scanner);
+        findCompositions = new FindCompositions(allCompos, scanner);
         findCompositions.execute();
 
         String output = testOut.toString();
@@ -70,13 +70,13 @@ public class FindCompositionsTest {
     @Test
     public void testInvalidMaxDurationInput() {
         Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        collection.addComposition(comp);
+        allCompos.addComposition(comp);
 
         String userInput = "60\nabc\n30\n700\n";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
 
-        findCompositions = new FindCompositions(collection, scanner);
+        findCompositions = new FindCompositions(allCompos, scanner);
         findCompositions.execute();
 
         String output = testOut.toString();

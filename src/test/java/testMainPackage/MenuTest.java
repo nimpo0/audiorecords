@@ -39,7 +39,6 @@ public class MenuTest {
         assertTrue(output.contains("=== MENU ==="), "Menu should be printed");
         assertTrue(output.contains("0. Exit"), "Menu should contain an Exit option");
         assertTrue(output.contains("Command executed successfully."), "Should indicate successful command execution");
-        System.setOut(System.out);
     }
 
     @Test
@@ -53,6 +52,5 @@ public class MenuTest {
 
         String output = outContent.toString();
         assertTrue(output.contains("Exiting the program. Goodbye!"), "Exit message should be displayed");
-        System.setOut(System.out);
     }
 }
