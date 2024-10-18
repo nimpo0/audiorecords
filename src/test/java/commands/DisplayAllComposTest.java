@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.DisplayAllCompos;
 import composition.ComposCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ public class DisplayAllComposTest {
     @Test
     public void testExecuteWhenCollectionIsEmpty() {
         when(allCompositions.isAllEmpty()).thenReturn(true);
-
         displayAllCompos.execute();
         verify(allCompositions).isAllEmpty();
     }
@@ -30,7 +28,6 @@ public class DisplayAllComposTest {
     public void testExecuteWhenCollectionHasCompositions() {
         when(allCompositions.isAllEmpty()).thenReturn(false);
         displayAllCompos.execute();
-
         verify(allCompositions).isAllEmpty();
         verify(allCompositions).displayAllCompositions();
     }

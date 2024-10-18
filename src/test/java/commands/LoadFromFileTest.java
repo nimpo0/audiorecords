@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.LoadFromFile;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +37,13 @@ public class LoadFromFileTest {
     @Test
     public void testLoadCollectionFromFile() {
         loadFromFile = new LoadFromFile(collection);
-
         loadFromFile.execute();
 
         assertEquals(1, collection.getCompositions().size(), "Collection should contain 1 composition after loading.");
         assertEquals("Symphony No.5", collection.getCompositions().get(0).getCompositionName(),
                 "The loaded composition should be 'Symphony No.5'.");
+        assertEquals("Ludwig van Beethoven", collection.getCompositions().get(0).getAuthor(),
+                "The loaded composition should have the author 'Ludwig van Beethoven'.");
     }
 
 

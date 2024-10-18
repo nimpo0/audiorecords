@@ -1,9 +1,8 @@
-package testCommands;
+package commands;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import commands.FindCompositions;
 import composition.ComposCollection;
 import composition.Composition;
 
@@ -51,9 +50,9 @@ public class FindCompositionsTest {
     @Test
     public void testInvalidMinDurationInput() {
         Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompos.addComposition(comp);
+        allCompos.addToAllCompositions(comp);
 
-        String userInput = "abc\n-10\n60\n600\n";
+        String userInput = "-10\n60\n600\n";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
 
@@ -61,7 +60,7 @@ public class FindCompositionsTest {
         findCompositions.execute();
 
         String output = testOut.toString();
-        assertTrue(output.contains("Invalid input, please enter a whole number."),
+        assertTrue(output.contains("Duration cannot be negative. Please try again."),
                 "Should prompt for valid min duration.");
 
         assertTrue(output.contains("Symphony No.9"), "The composition should be found after correct input.");
@@ -70,7 +69,7 @@ public class FindCompositionsTest {
     @Test
     public void testInvalidMaxDurationInput() {
         Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompos.addComposition(comp);
+        allCompos.addToAllCompositions(comp);
 
         String userInput = "60\nabc\n30\n700\n";
         testIn = new ByteArrayInputStream(userInput.getBytes());

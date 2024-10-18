@@ -1,12 +1,10 @@
-package testComposition;
+package composition;
 
-import composition.Composition;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CompositionTest {
-
     private Composition composition;
 
     @BeforeEach

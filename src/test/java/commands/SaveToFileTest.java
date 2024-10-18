@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.SaveToFile;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +36,6 @@ public class SaveToFileTest {
 
         File savedFile = new File(fixedFilename);
         assertTrue(savedFile.exists(), "File should be created after saving.");
-
         assertTrue(savedFile.length() > 0, "File should not be empty after saving.");
     }
 

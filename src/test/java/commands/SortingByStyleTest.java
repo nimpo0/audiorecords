@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.SortingByStyle;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.AfterEach;
@@ -59,8 +58,7 @@ class SortingByStyleTest {
 
         when(collection.getCompositions()).thenReturn(compositions);
 
-        String userInput = "1";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
+        testIn = new ByteArrayInputStream("1".getBytes());
         Scanner scanner = new Scanner(testIn);
         sortingByStyle = new SortingByStyle(collection, scanner);
         sortingByStyle.execute();
@@ -83,8 +81,7 @@ class SortingByStyleTest {
 
         when(collection.getCompositions()).thenReturn(compositions);
 
-        String simulatedUserInput = "2";
-        testIn = new ByteArrayInputStream(simulatedUserInput.getBytes());
+        testIn = new ByteArrayInputStream("2".getBytes());
         Scanner scanner = new Scanner(testIn);
         sortingByStyle = new SortingByStyle(collection, scanner);
         sortingByStyle.execute();

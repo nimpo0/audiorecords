@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.AddCompos;
 import composition.ComposCollection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +39,7 @@ class AddComposTest {
 
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         addCompos = new AddCompos(allCompos, scanner);
         addCompos.execute();
 
@@ -53,6 +53,7 @@ class AddComposTest {
 
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         addCompos = new AddCompos(allCompos, scanner);
         addCompos.execute();
 
@@ -63,10 +64,11 @@ class AddComposTest {
 
     @Test
     void testExecuteNonIntegerDurationThenValid() {
-        String simulatedUserInput = "Piano Concerto No.21\nClassical\nWolfgang Amadeus Mozart\nabc\n200\nElvira Madigan lyrics...";
+        String userInput = "Piano Concerto No.21\nClassical\nWolfgang Amadeus Mozart\nabc\n200\nElvira Madigan lyrics...";
 
-        testIn = new ByteArrayInputStream(simulatedUserInput.getBytes());
+        testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         addCompos = new AddCompos(allCompos, scanner);
         addCompos.execute();
 

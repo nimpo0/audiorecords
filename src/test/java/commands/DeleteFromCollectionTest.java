@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.DeleteFromCollection;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.AfterEach;
@@ -57,6 +56,7 @@ class DeleteFromCollectionTest {
         String userInput = "Symphony No.5";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         deleteFromCollection = new DeleteFromCollection(collection, scanner);
         deleteFromCollection.execute();
 
@@ -74,6 +74,7 @@ class DeleteFromCollectionTest {
         String userInput = "Symphony No.5";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         deleteFromCollection = new DeleteFromCollection(collection, scanner);
         deleteFromCollection.execute();
 

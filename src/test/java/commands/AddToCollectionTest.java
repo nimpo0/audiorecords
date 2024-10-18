@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.AddToCollection;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +27,7 @@ public class AddToCollectionTest {
     public void testNoAvailableCompositionsToAdd() {
         testIn = new ByteArrayInputStream("".getBytes());
         Scanner scanner = new Scanner(testIn);
+
         addToCollection = new AddToCollection(collection, allCompositions, scanner);
         addToCollection.execute();
 
@@ -43,6 +43,7 @@ public class AddToCollectionTest {
         String userInput = "Symphony No.9\n";
         testIn = new ByteArrayInputStream(userInput.getBytes());
         Scanner scanner = new Scanner(testIn);
+
         addToCollection = new AddToCollection(collection, allCompositions, scanner);
         addToCollection.execute();
 

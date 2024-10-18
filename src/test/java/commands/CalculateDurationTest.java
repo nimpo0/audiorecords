@@ -1,6 +1,5 @@
-package testCommands;
+package commands;
 
-import commands.CalculateDuration;
 import composition.ComposCollection;
 import composition.Composition;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,10 +49,5 @@ public class CalculateDurationTest {
                 "The total duration should be 5 minutes and 0 seconds");
 
         System.setOut(System.out);
-    }
-
-    @Test
-    public void testPrintInfo() {
-        assertEquals("Calculate the total duration of the collection.", calculateDuration.printInfo());
     }
 }

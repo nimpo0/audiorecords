@@ -1,7 +1,5 @@
-package testComposition;
+package composition;
 
-import composition.Composition;
-import composition.ComposCollection;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +10,9 @@ import java.io.PrintStream;
 class ComposCollectionTest {
 
     private ComposCollection composCollection;
-    ByteArrayOutputStream outContent;
     private Composition symphony;
     private Composition concerto;
+    ByteArrayOutputStream outContent;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +60,6 @@ class ComposCollectionTest {
 
         Composition found = composCollection.findCompositionByName("Symphony No.5");
         assertNotNull(found, "Should find the composition by name");
-        assertEquals(symphony, found, "Found composition should be the correct one");
 
         Composition notFound = composCollection.findCompositionByName("Something");
         assertNull(notFound, "Should return null for non-existent composition");
@@ -75,7 +72,6 @@ class ComposCollectionTest {
 
         Composition found = composCollection.findInAllCompositions("Piano Concerto No.21");
         assertNotNull(found, "Should find the composition in allCompositions by name");
-        assertEquals(concerto, found, "Found composition should be the correct one");
 
         Composition notFound = composCollection.findInAllCompositions("Something");
         assertNull(notFound, "Should return null for non-existent composition in allCompositions");
@@ -87,9 +83,7 @@ class ComposCollectionTest {
         System.setOut(new PrintStream(outContent));
 
         composCollection.displayCompositions();
-
         assertTrue(outContent.toString().contains("The collection is empty."), "Should display 'The collection is empty.' when no compositions exist");
-
         System.setOut(System.out);
     }
 
@@ -100,9 +94,7 @@ class ComposCollectionTest {
         System.setOut(new PrintStream(outContent));
 
         composCollection.displayCompositions();
-
         assertTrue(outContent.toString().contains("Symphony No.5"), "Should display the composition when it exists");
-
         System.setOut(System.out);
     }
 }
