@@ -45,7 +45,5 @@ public class LoadFromFileTest {
         assertEquals("Ludwig van Beethoven", collection.getCompositions().get(0).getAuthor(),
                 "The loaded composition should have the author 'Ludwig van Beethoven'.");
     }
-
-
 }
 

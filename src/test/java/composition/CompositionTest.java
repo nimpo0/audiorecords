@@ -35,6 +35,4 @@ class CompositionTest {
 
         assertEquals(expectedContent, composition.toString(), "toString method should return expected format");
     }
-
-
 }

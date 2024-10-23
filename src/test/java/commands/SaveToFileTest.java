@@ -38,7 +38,5 @@ public class SaveToFileTest {
         assertTrue(savedFile.exists(), "File should be created after saving.");
         assertTrue(savedFile.length() > 0, "File should not be empty after saving.");
     }
-
-
 }
 
