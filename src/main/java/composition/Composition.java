@@ -1,34 +1,34 @@
 package composition;
 
-import java.io.Serializable;
-
-public class Composition implements Serializable {
-
-    private String compositionName;
+public class Composition {
+    private int id;
+    private String name;
     private String style;
+    private int duration;
     private String author;
-    private int composDuration;
     private String lyrics;
 
-    public Composition(String compositionName, String style, String author, int compositionDuration, String lyrics) {
-        this.compositionName = compositionName;
+    public Composition() {}
+
+    public Composition(int id, String name, String style, int duration, String author, String lyrics) {
+        this.id = id;
+        this.name = name;
         this.style = style;
+        this.duration = duration;
         this.author = author;
-        this.composDuration = compositionDuration;
         this.lyrics = lyrics;
-        System.out.println("Composition is created: " + compositionName);
     }
 
-    public String getCompositionName() {
-        return compositionName;
+    public String getName() {
+        return name;
     }
 
     public String getStyle() {
         return style;
     }
 
-    public int getComposDuration() {
-        return composDuration;
+    public int getDuration() {
+        return duration;
     }
 
     public String getAuthor() {
@@ -39,11 +39,15 @@ public class Composition implements Serializable {
         return lyrics;
     }
 
+    @Override
     public String toString() {
-        String comp = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
-                compositionName, style, author, composDuration + " s", lyrics);
-        String separator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
-        return comp + separator;
+        return "Composition{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", style='" + style + '\'' +
+                ", duration=" + duration +
+                ", author='" + author + '\'' +
+                ", lyrics='" + lyrics + '\'' +
+                '}';
     }
-
 }

@@ -1,38 +1,51 @@
 package commands;
 
-import composition.ComposCollection;
-import composition.Composition;
+import database.CompositionBD;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
 
 public class AddCompos implements Command {
-    private ComposCollection allCompos;
-    private Scanner scanner;
+    private static final Logger logger = LogManager.getLogger(AddCompos.class);
+    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
-    public AddCompos(ComposCollection allCollection, Scanner scanner) {
-        this.allCompos = allCollection;
+    private final Scanner scanner;
+
+    public AddCompos(Scanner scanner) {
         this.scanner = scanner;
     }
 
     @Override
     public void execute() {
-        System.out.println("Enter the composition name:");
-        String name = scanner.nextLine();
+        try {
+            System.out.println("Enter the composition name:");
+            String name = scanner.nextLine();
 
-        System.out.println("Enter the composition style:");
-        String style = scanner.nextLine();
+            System.out.println("Enter the composition style:");
+            String style = scanner.nextLine();
 
-        System.out.println("Enter the author's name:");
-        String author = scanner.nextLine();
+            System.out.println("Enter the author's name:");
+            String author = scanner.nextLine();
 
-        int duration = getDurationNum();
+            int duration = getDurationNum();
 
-        System.out.println("Enter the lyrics:");
-        String lyrics = scanner.nextLine();
+            System.out.println("Enter the lyrics:");
+            String lyrics = scanner.nextLine();
 
-        Composition newComposition = new Composition(name, style, author, duration, lyrics);
-        allCompos.addToAllCompositions(newComposition);
-        System.out.println("Composition successfully added.");
+            int newId = CompositionBD.insertComposition(name, style, duration, author, lyrics);
+
+            if (newId != -1) {
+                logger.info("Composition '{}' successfully added with ID {}", name, newId);
+                System.out.println("Composition successfully added.");
+            } else {
+                logger.warn("Failed to add composition '{}'", name);
+                System.out.println("Failed to add composition.");
+            }
+        } catch (Exception e) {
+            errorLogger.error("Error while adding composition: {}", e.getMessage(), e);
+            System.out.println("An error occurred while adding the composition.");
+        }
     }
 
     @Override
@@ -52,6 +65,7 @@ public class AddCompos implements Command {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input, please enter a whole number.");
+                errorLogger.error("Invalid input for duration: '{}'", e.getMessage());
             }
         }
         return dur;
