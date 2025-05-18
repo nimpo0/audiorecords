@@ -1,7 +1,7 @@
 package commands;
 
 import composition.ComposCollection;
-import composition.Composition;
+import database.CompositionBD;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,9 +52,9 @@ class SortingByStyleTest {
     void testExecuteSortAlphabetically() {
         when(collection.isEmpty()).thenReturn(false);
 
-        List<Composition> compositions = new ArrayList<>();
-        compositions.add(new Composition("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
-        compositions.add(new Composition("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
+        List<CompositionBD> compositions = new ArrayList<>();
+        compositions.add(new CompositionBD("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
+        compositions.add(new CompositionBD("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
 
         when(collection.getCompositions()).thenReturn(compositions);
 
@@ -75,9 +75,9 @@ class SortingByStyleTest {
     void testExecuteSortReverseAlphabetically() {
         when(collection.isEmpty()).thenReturn(false);
 
-        List<Composition> compositions = new ArrayList<>();
-        compositions.add(new Composition("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
-        compositions.add(new Composition("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
+        List<CompositionBD> compositions = new ArrayList<>();
+        compositions.add(new CompositionBD("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
+        compositions.add(new CompositionBD("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
 
         when(collection.getCompositions()).thenReturn(compositions);
 
