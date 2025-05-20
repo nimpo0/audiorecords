@@ -1,10 +1,5 @@
 package database;
-
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 public class CollectionCompositionBD extends DatabaseManager {
 
@@ -83,24 +78,5 @@ public class CollectionCompositionBD extends DatabaseManager {
         } catch (SQLException e) {
             System.err.println("Error removing composition from collection: " + e.getMessage());
         }
-    }
-
-    public Map<String, List<Integer>> getCompositionsForCollection() {
-        Map<String, List<Integer>> map = new HashMap<>();
-        String sql = "SELECT c.name AS collection_name, cc.composition_id FROM collection_compositions cc JOIN collections c ON cc.collection_id = c.id";
-
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                String colName = rs.getString("collection_name");
-                int compId = rs.getInt("composition_id");
-                map.computeIfAbsent(colName, k -> new ArrayList<>()).add(compId);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error reading collection-composition links: " + e.getMessage());
-        }
-
-        return map;
     }
 }

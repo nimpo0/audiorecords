@@ -7,16 +7,18 @@ public class Composition {
     private int duration;
     private String author;
     private String lyrics;
+    private String audioPath;
 
     public Composition() {}
 
-    public Composition(int id, String name, String style, int duration, String author, String lyrics) {
+    public Composition(int id, String name, String style, int duration, String author, String lyrics, String audioPath) {
         this.id = id;
         this.name = name;
         this.style = style;
         this.duration = duration;
         this.author = author;
         this.lyrics = lyrics;
+        this.audioPath = audioPath;
     }
 
     public String getName() {
@@ -39,6 +41,10 @@ public class Composition {
         return lyrics;
     }
 
+    public String getAudioPath() {
+        return audioPath;
+    }
+
     @Override
     public String toString() {
         return "Composition{" +
@@ -48,6 +54,7 @@ public class Composition {
                 ", duration=" + duration +
                 ", author='" + author + '\'' +
                 ", lyrics='" + lyrics + '\'' +
+                ", audioPath='" + audioPath + '\'' +
                 '}';
     }
 }

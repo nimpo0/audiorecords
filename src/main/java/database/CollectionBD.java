@@ -1,8 +1,6 @@
 package database;
-
 import composition.Collection;
 import composition.Composition;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +13,9 @@ public class CollectionBD extends DatabaseManager {
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.executeUpdate();
-            System.out.println("✔ Collection inserted successfully");
+            System.out.println("Collection inserted successfully");
         } catch (SQLException e) {
-            System.err.println("❌ Error inserting collection: " + e.getMessage());
+            System.err.println("Error inserting collection: " + e.getMessage());
         }
     }
 
@@ -28,16 +26,16 @@ public class CollectionBD extends DatabaseManager {
             pstmt.setString(1, name);
             int affected = pstmt.executeUpdate();
             if (affected > 0) {
-                System.out.println("✔ Collection deleted successfully");
+                System.out.println("Collection deleted successfully");
             } else {
-                System.out.println("⚠ No collection found with that name.");
+                System.out.println("No collection found with that name.");
             }
         } catch (SQLException e) {
             System.err.println("Error deleting collection: " + e.getMessage());
         }
     }
 
-    public static List<Collection> getAllCollections() {
+    public List<Collection> getAllCollections() {
         List<Collection> list = new ArrayList<>();
         String sql = "SELECT id, name FROM collections";
 
@@ -60,7 +58,7 @@ public class CollectionBD extends DatabaseManager {
     public List<Composition> getCompositionsForCollection(String collectionName) {
         List<Composition> compositions = new ArrayList<>();
         String sql = """
-            SELECT c.id, c.name, c.style, c.duration, c.author, c.lyrics
+            SELECT c.id, c.name, c.style, c.duration, c.author, c.lyrics, c.audiopath
             FROM compositions c
             JOIN collection_compositions cc ON c.id = cc.composition_id
             JOIN collections col ON col.id = cc.collection_id
@@ -78,7 +76,8 @@ public class CollectionBD extends DatabaseManager {
                             rs.getString("style"),
                             rs.getInt("duration"),
                             rs.getString("author"),
-                            rs.getString("lyrics")
+                            rs.getString("lyrics"),
+                            rs.getString("audiopath")
                     );
                     compositions.add(composition);
                 }

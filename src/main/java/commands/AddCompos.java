@@ -1,51 +1,143 @@
 package commands;
-
 import database.CompositionBD;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
+import mainPackage.Menu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Scanner;
+import java.io.File;
+import java.util.Objects;
 
 public class AddCompos implements Command {
     private static final Logger logger = LogManager.getLogger(AddCompos.class);
     private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
-    private final Scanner scanner;
-
-    public AddCompos(Scanner scanner) {
-        this.scanner = scanner;
-    }
-
     @Override
     public void execute() {
-        try {
-            System.out.println("Enter the composition name:");
-            String name = scanner.nextLine();
+        Label title = new Label("Додати нову композицію");
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 26));
+        title.setTextFill(Color.WHITE);
 
-            System.out.println("Enter the composition style:");
-            String style = scanner.nextLine();
+        ImageView icon = new ImageView(
+                new Image(Objects.requireNonNull(getClass().getResource("/music.png")).toExternalForm())
+        );
+        icon.setFitWidth(70);
+        icon.setFitHeight(70);
 
-            System.out.println("Enter the author's name:");
-            String author = scanner.nextLine();
+        HBox titleBox = new HBox(10, icon, title);
+        titleBox.setAlignment(Pos.CENTER);
 
-            int duration = getDurationNum();
+        TextField nameField = new TextField();
+        nameField.setPromptText("Назва композиції");
 
-            System.out.println("Enter the lyrics:");
-            String lyrics = scanner.nextLine();
+        TextField authorField = new TextField();
+        authorField.setPromptText("Ім’я автора");
 
-            int newId = CompositionBD.insertComposition(name, style, duration, author, lyrics);
+        TextField styleField = new TextField();
+        styleField.setPromptText("Стиль композиції");
 
-            if (newId != -1) {
-                logger.info("Composition '{}' successfully added with ID {}", name, newId);
-                System.out.println("Composition successfully added.");
-            } else {
-                logger.warn("Failed to add composition '{}'", name);
-                System.out.println("Failed to add composition.");
+        TextField durationField = new TextField();
+        durationField.setPromptText("Тривалість (у секундах)");
+
+        TextArea lyricsArea = new TextArea();
+        lyricsArea.setPromptText("Текст пісні");
+        lyricsArea.setWrapText(true);
+        lyricsArea.setPrefRowCount(4);
+
+        TextField audioPathField = new TextField();
+        audioPathField.setPromptText("Шлях до аудіофайлу");
+        audioPathField.setEditable(false);
+
+        Button browseButton = new Button("🎵 Вибрати аудіо");
+        browseButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Виберіть аудіофайл");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Аудіофайли", "*.mp3", "*.wav")
+            );
+            File file = fileChooser.showOpenDialog(Menu.getPrimaryStage());
+            if (file != null) {
+                audioPathField.setText(file.toURI().toString());
             }
-        } catch (Exception e) {
-            errorLogger.error("Error while adding composition: {}", e.getMessage(), e);
-            System.out.println("An error occurred while adding the composition.");
-        }
+        });
+
+        HBox audioBox = new HBox(10, audioPathField, browseButton);
+        audioBox.setAlignment(Pos.CENTER);
+
+        Button submitButton = new Button("Додати композицію");
+        submitButton.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: #ffffff; -fx-text-fill: #800080;");
+        submitButton.setPrefWidth(200);
+        submitButton.setPrefHeight(40);
+
+        submitButton.setOnAction(e -> {
+            try {
+                String name = nameField.getText().trim();
+                String style = styleField.getText().trim();
+                String author = authorField.getText().trim();
+                String durationStr = durationField.getText().trim();
+                String lyrics = lyricsArea.getText().trim();
+                String audioPath = audioPathField.getText().trim();
+
+                if (name.isEmpty() || style.isEmpty() || author.isEmpty() || durationStr.isEmpty() || audioPath.isEmpty()) {
+                    showAlert("Усі поля мають бути заповнені.");
+                    return;
+                }
+
+                int duration = Integer.parseInt(durationStr);
+                if (duration <= 0) {
+                    showAlert("Тривалість має бути додатнім числом.");
+                    return;
+                }
+
+                int newId = CompositionBD.insertComposition(name, style, duration, author, lyrics, audioPath);
+
+                if (newId != -1) {
+                    logger.info("Composition '{}' successfully added with ID {}", name, newId);
+                    showAlert("Композицію успішно додано!");
+                } else {
+                    showAlert("Не вдалося додати композицію.");
+                }
+            } catch (NumberFormatException ex) {
+                showAlert("Некоректне число в полі тривалості.");
+                errorLogger.error("Invalid duration input: {}", ex.getMessage(), ex);
+            } catch (Exception ex) {
+                errorLogger.error("Error while adding composition: {}", ex.getMessage(), ex);
+                showAlert("Виникла помилка при додаванні композиції.");
+            }
+        });
+
+        Button backButton = new Button("⬅ Назад до меню");
+        backButton.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: #ffffff; -fx-text-fill: #800080;");
+        backButton.setPrefWidth(200);
+        backButton.setPrefHeight(40);
+        backButton.setOnAction(e -> Menu.getInstance().showMainMenu());
+
+        VBox form = new VBox(15, titleBox, nameField, authorField, styleField, durationField, lyricsArea, audioBox, submitButton, backButton);
+        form.setAlignment(Pos.CENTER);
+        form.setPadding(new Insets(30));
+        form.setMaxWidth(500);
+
+        BorderPane layout = new BorderPane();
+        layout.setCenter(form);
+        layout.setPadding(new Insets(20));
+        layout.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(0, 1, 1, 0, true,
+                        javafx.scene.paint.CycleMethod.NO_CYCLE,
+                        new javafx.scene.paint.Stop(0, Color.LAVENDERBLUSH),
+                        new javafx.scene.paint.Stop(1, Color.web("#916DB4"))),
+                new CornerRadii(10),
+                Insets.EMPTY)));
+
+        Menu.getPrimaryStage().getScene().setRoot(layout);
     }
 
     @Override
@@ -53,21 +145,11 @@ public class AddCompos implements Command {
         return "Add a new composition.";
     }
 
-    private int getDurationNum() {
-        int dur = -1;
-        while (dur <= 0) {
-            System.out.println("Enter the composition duration (in seconds):");
-            try {
-                String input = scanner.nextLine();
-                dur = Integer.parseInt(input);
-                if (dur <= 0) {
-                    System.out.println("Duration must be a positive number. Please try again.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, please enter a whole number.");
-                errorLogger.error("Invalid input for duration: '{}'", e.getMessage());
-            }
-        }
-        return dur;
+    private void showAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Інформація");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

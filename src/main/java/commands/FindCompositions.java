@@ -1,107 +1,137 @@
 package commands;
-
 import composition.Composition;
-import database.CompositionBD;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-public class FindCompositions implements Command {
+public class FindCompositions {
     private static final Logger logger = LogManager.getLogger(FindCompositions.class);
     private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
-    private Scanner scanner;
-    private CompositionBD compositionBD = new CompositionBD();
-
-    public FindCompositions(Scanner scanner) {
-        this.scanner = scanner;
-    }
-
-    @Override
-    public void execute() {
-        List<Composition> allCompositions = CompositionBD.getAllCompositions();
-
+    public List<Composition> findInRange(List<Composition> allCompositions) {
         if (allCompositions.isEmpty()) {
-            System.out.println("There are no compositions in the database.");
-            logger.warn("Attempted to search compositions, but the database is empty.");
-            return;
+            showStyledMessage("У базі немає композицій.");
+            logger.warn("Пошук композицій база порожня.");
+            return null;
         }
 
-        int minDuration = getMinDuration();
-        int maxDuration = getMaxDuration(minDuration);
+        int[] range = showDurationInputDialog();
+        if (range == null) return null;
 
-        List<Composition> foundCompos = new ArrayList<>();
-        for (Composition comp : allCompositions) {
-            int duration = comp.getDuration();
-            if (duration >= minDuration && duration <= maxDuration) {
-                foundCompos.add(comp);
+        int minDuration = range[0];
+        int maxDuration = range[1];
+
+        List<Composition> found = new ArrayList<>();
+        for (Composition c : allCompositions) {
+            int d = c.getDuration();
+            if (d >= minDuration && d <= maxDuration) {
+                found.add(c);
             }
         }
 
-        if (foundCompos.isEmpty()) {
-            System.out.println("No compositions found within the specified duration range.");
-            logger.warn("No compositions found for duration range {} to {} seconds.", minDuration, maxDuration);
-        } else {
-            System.out.println("Found compositions:");
-            System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
-            for (Composition comp : foundCompos) {
-                System.out.println(comp);
-            }
-            logger.info("Found {} compositions for duration range {} to {} seconds.", foundCompos.size(), minDuration, maxDuration);
+        if (found.isEmpty()) {
+            showStyledMessage("Композицій у заданому діапазоні не знайдено.");
+            logger.warn("Пошук: не знайдено композицій між {} і {} сек.", minDuration, maxDuration);
+            return null;
         }
+
+        logger.info("Знайдено {} композицій ({} - {} сек).", found.size(), minDuration, maxDuration);
+        return found;
     }
 
-    @Override
-    public String printInfo() {
-        return "Find compositions by duration range.";
-    }
+    private int[] showDurationInputDialog() {
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.setTitle("Фільтр за тривалістю");
 
-    private int getMinDuration() {
-        int minDur = -1;
-        while (minDur < 0) {
-            System.out.println("Enter the minimum duration of the composition (in seconds):");
+        Label label = new Label("Введіть діапазон тривалості (сек):");
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+
+        TextField minField = new TextField();
+        minField.setPromptText("Мінімум");
+        minField.setMaxWidth(120);
+
+        TextField maxField = new TextField();
+        maxField.setPromptText("Максимум");
+        maxField.setMaxWidth(120);
+
+        HBox inputBox = new HBox(15, minField, maxField);
+        inputBox.setAlignment(Pos.CENTER);
+
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-radius: 15; -fx-background-color: white; -fx-text-fill: purple;");
+        final int[][] result = {null};
+
+        okButton.setOnAction(e -> {
             try {
-                String input = scanner.nextLine();
-                minDur = Integer.parseInt(input);
-                if (minDur < 0) {
-                    System.out.println("Duration cannot be negative. Please try again.");
-                    logger.warn("Invalid minimum duration input: {}", input);
+                int min = Integer.parseInt(minField.getText());
+                int max = Integer.parseInt(maxField.getText());
+                if (min > max) {
+                    showStyledMessage("Мінімум не може бути більшим за максимум.");
+                } else if (min < 0) {
+                    showStyledMessage("Значення не можуть бути від’ємними.");
+                } else {
+                    result[0] = new int[]{min, max};
+                    dialogStage.close();
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, please enter a whole number.");
-                errorLogger.error("Invalid input for minimum duration: {}", e.getMessage());
+            } catch (NumberFormatException ex) {
+                errorLogger.error("Невірне введення тривалості: {}", ex.getMessage());
+                showStyledMessage("Введіть лише цілі числа.");
             }
-        }
-        return minDur;
+        });
+
+        VBox vbox = new VBox(20, label, inputBox, okButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(30));
+        vbox.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.MEDIUMPURPLE),
+                        new Stop(1, Color.HOTPINK)),
+                new CornerRadii(15), Insets.EMPTY
+        )));
+
+        Scene scene = new Scene(vbox, 420, 220);
+        dialogStage.setScene(scene);
+        dialogStage.showAndWait();
+
+        return result[0];
     }
 
-    private int getMaxDuration(int minDur) {
-        int maxDur = -1;
-        while (maxDur < minDur) {
-            System.out.println("Enter the maximum duration (in seconds):");
-            try {
-                String input = scanner.nextLine();
-                maxDur = Integer.parseInt(input);
-                if (maxDur < minDur) {
-                    System.out.println("Maximum duration cannot be less than the minimum. Please try again.");
-                    logger.warn("Invalid maximum duration input: {}. It cannot be less than the minimum duration of {}.", input, minDur);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, please enter a whole number.");
-                errorLogger.error("Invalid input for maximum duration: {}", e.getMessage());
-            }
-        }
-        return maxDur;
-    }
+    private void showStyledMessage(String message) {
+        Stage msgStage = new Stage();
+        msgStage.initModality(Modality.APPLICATION_MODAL);
+        msgStage.setTitle("Повідомлення");
 
-    public CompositionBD getCompositionBD() {
-        return compositionBD;
-    }
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+        messageLabel.setWrapText(true);
 
-    public void setCompositionBD(CompositionBD compositionBD) {
-        this.compositionBD = compositionBD;
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-radius: 15; -fx-background-color: white; -fx-text-fill: purple;");
+        okButton.setOnAction(e -> msgStage.close());
+
+        VBox vbox = new VBox(20, messageLabel, okButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(30));
+        vbox.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(1, 0, 0, 1, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.PLUM),
+                        new Stop(1, Color.MEDIUMPURPLE)),
+                new CornerRadii(15), Insets.EMPTY
+        )));
+
+        Scene scene = new Scene(vbox, 400, 200);
+        msgStage.setScene(scene);
+        msgStage.showAndWait();
     }
 }

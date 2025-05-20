@@ -1,70 +1,106 @@
 package commands;
-
-import composition.ComposCollection;
 import composition.Composition;
-
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Comparator;
-import java.util.Scanner;
+import java.util.List;
 
-public class SortingByStyle implements Command {
-    private ComposCollection collection;
-    private Scanner scanner;
+public class SortingByStyle {
+    private static final Logger logger = LogManager.getLogger(SortingByStyle.class);
 
-    public SortingByStyle(ComposCollection collection, Scanner scanner) {
-        this.collection = collection;
-        this.scanner = scanner;
+    public List<Composition> sort(List<Composition> compositions) {
+        if (compositions.isEmpty()) {
+            showStyledMessage("У базі даних немає композицій.");
+            logger.warn("Сортування база порожня.");
+            return null;
+        }
+
+        String selected = showStyledChoiceDialog();
+        if (selected == null) return null;
+
+        if (selected.equals("По алфавіту")) {
+            compositions.sort(Comparator.comparing(Composition::getStyle));
+            logger.info("Сортування за стилем по алфавіту.");
+        } else {
+            compositions.sort(Comparator.comparing(Composition::getStyle).reversed());
+            logger.info("Сортування за стилем у зворотному порядку.");
+        }
+
+        return compositions;
     }
 
-    @Override
-    public void execute() {
-        if (collection.isEmpty()) {
-            System.out.println("The collection is empty.");
-            return;
-        }
+    private void showStyledMessage(String message) {
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.setTitle("Повідомлення");
 
-        int choice = getUserChoice();
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+        messageLabel.setWrapText(true);
 
-        if (choice == 1) {
-            collection.getCompositions().sort(Comparator.comparing(composition -> composition.getStyle()));
-            System.out.println("Compositions sorted alphabetically.");
-            System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
-        }
-        else if (choice == 2) {
-            collection.getCompositions().sort(Comparator.comparing(Composition::getStyle).reversed());
-            System.out.println("Compositions sorted in reverse alphabetical order.");
-            System.out.println("+----------------------+-----------------+-----------------+------------+--------------------------------+");
-        }
-        else {
-            System.out.println("Invalid choice, please try again.");
-            return;
-        }
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-radius: 15; -fx-background-color: white; -fx-text-fill: purple; -fx-font-size: 14px;");
+        okButton.setOnAction(e -> dialogStage.close());
 
-        collection.displayCompositions();
+        VBox vbox = new VBox(20, messageLabel, okButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(30));
+        vbox.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(0, 0, 1, 1, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.MEDIUMPURPLE),
+                        new Stop(1, Color.HOTPINK)),
+                new CornerRadii(15), Insets.EMPTY
+        )));
+
+        Scene scene = new Scene(vbox, 400, 200);
+        dialogStage.setScene(scene);
+        dialogStage.showAndWait();
     }
 
-    @Override
-    public String printInfo() {
-        return "Sort compositions by style in collection.";
+    private String showStyledChoiceDialog() {
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.setTitle("Сортування за стилем");
+
+        Label promptLabel = new Label("Оберіть порядок сортування:");
+        promptLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("По алфавіту", "У зворотному порядку");
+        comboBox.setValue("По алфавіту");
+
+        Button okButton = new Button("OK");
+        okButton.setStyle("-fx-background-radius: 15; -fx-background-color: white; -fx-text-fill: purple;");
+        final String[] result = {null};
+        okButton.setOnAction(e -> {
+            result[0] = comboBox.getValue();
+            dialogStage.close();
+        });
+
+        VBox vbox = new VBox(15, promptLabel, comboBox, okButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(30));
+        vbox.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(1, 0, 0, 1, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.PLUM),
+                        new Stop(1, Color.MEDIUMPURPLE)),
+                new CornerRadii(15), Insets.EMPTY
+        )));
+
+        Scene scene = new Scene(vbox, 400, 200);
+        dialogStage.setScene(scene);
+        dialogStage.showAndWait();
+
+        return result[0];
     }
-
-    private int getUserChoice() {
-        int choice = -1;
-        while (choice != 1 && choice != 2) {
-            System.out.println("Choose sorting order:");
-            System.out.println("1. Alphabetically");
-            System.out.println("2. In reverse alphabetical order");
-
-            String input = scanner.nextLine();
-            try {
-                choice = Integer.parseInt(input);
-                if (choice != 1 && choice != 2) {
-                    System.out.println("Invalid input, please enter 1 or 2.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input, please enter a whole number.");
-            }
-        }
-        return choice;
-    }
-
 }

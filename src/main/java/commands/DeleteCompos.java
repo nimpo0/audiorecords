@@ -1,44 +1,46 @@
 package commands;
-
 import database.CompositionBD;
+import javafx.scene.control.Alert;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Scanner;
 
 public class DeleteCompos implements Command {
     private static final Logger logger = LogManager.getLogger(DeleteCompos.class);
     private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
-    private final Scanner scanner;
+    private final String compositionName;
 
-    public DeleteCompos(Scanner scanner) {
-        this.scanner = scanner;
+    public DeleteCompos(String compositionName) {
+        this.compositionName = compositionName;
     }
 
     @Override
     public void execute() {
-        System.out.print("Enter the name of the composition to delete: ");
-        String nameToDelete = scanner.nextLine();
-
         try {
-            boolean deleted = CompositionBD.deleteComposition(nameToDelete);
-
+            boolean deleted = CompositionBD.deleteComposition(compositionName);
             if (deleted) {
-                logger.info("Composition '{}' successfully deleted from the database.", nameToDelete);
-                System.out.println("Composition successfully deleted.");
+                logger.info("Composition '{}' successfully deleted from the database.", compositionName);
+                showAlert("Успішно", "Композиція '" + compositionName + "' видалена з бази даних.");
             } else {
-                logger.warn("Composition '{}' not found in the database.", nameToDelete);
-                System.out.println("Composition not found in database.");
+                logger.warn("Composition '{}' not found in the database.", compositionName);
+                showAlert("Не знайдено", "Композицію не знайдено в базі даних.");
             }
         } catch (Exception e) {
-            errorLogger.error("Error while deleting composition '{}': {}", nameToDelete, e.getMessage(), e);
-            System.out.println("Error occurred while deleting composition. Check logs for more info.");
+            errorLogger.error("Error while deleting composition: {}", e.getMessage(), e);
+            showAlert("Помилка", "Сталася помилка при видаленні: " + e.getMessage());
         }
     }
 
     @Override
     public String printInfo() {
-        return "Delete a composition by name.";
+        return "Delete a specific composition from the database.";
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

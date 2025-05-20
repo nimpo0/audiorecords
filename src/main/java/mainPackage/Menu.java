@@ -1,95 +1,172 @@
 package mainPackage;
-
 import commands.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import java.util.*;
+public class Menu extends Application {
+    final Map<String, Command> commandMap = new HashMap<>();
+    private Stage primaryStage;
+    private static Menu instance;
 
-public class Menu {
-    private static final Logger logger = LogManager.getLogger(Menu.class);
-    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
-
-    private final Scanner scanner;
-    private final Map<Integer, Command> commandMap;
-
-    public Menu() {
-        this.scanner = new Scanner(System.in);
-        this.commandMap = new HashMap<>();
-        initializeCommands();
+    public static Menu getInstance() {
+        return instance;
     }
 
-    public void start() {
-        while (true) {
-            printMenu();
-            int choice = getUserChoice();
+    @Override
+    public void start(Stage stage) {
+        instance = this;
+        this.primaryStage = stage;
+        initializeCommands();
+        showWelcomeScreen();
+    }
 
-            if (choice == 0) {
-                System.out.println("Exiting the program. Goodbye!");
-                logger.info("Exiting the program.");
-                break;
+    private void showWelcomeScreen() {
+        BorderPane welcomePane = new BorderPane();
+        welcomePane.setPadding(new Insets(50));
+
+        BackgroundFill backgroundFill = new BackgroundFill(
+                new LinearGradient(0, 0, 1, 1, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.MEDIUMPURPLE),
+                        new Stop(1, Color.HOTPINK)),
+                CornerRadii.EMPTY, Insets.EMPTY);
+        welcomePane.setBackground(new Background(backgroundFill));
+
+        Text welcomeText = new Text("🎶 Ласкаво просимо до Music Collection!");
+        welcomeText.setFont(Font.font("Arial", 24));
+        welcomeText.setFill(Color.WHITE);
+        welcomeText.setWrappingWidth(400);
+        welcomeText.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        Button startButton = new Button("🚀 Розпочати");
+        startButton.setStyle("-fx-font-size: 16px; -fx-background-radius: 20; -fx-background-color: white; -fx-text-fill: purple;");
+        startButton.setOnAction(e -> showMainMenu());
+
+        VBox centerBox = new VBox(20, welcomeText, startButton);
+        centerBox.setAlignment(Pos.CENTER);
+
+        welcomePane.setCenter(centerBox);
+
+        Scene scene = new Scene(welcomePane, 600, 500);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Music Collection");
+        primaryStage.show();
+    }
+
+    public void showMainMenu() {
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(20));
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setAlignment(Pos.CENTER);
+
+        String[][] buttons = {
+                {"➕ Додати композицію", "addCompos"},
+                {"📄 Показати всі композиції", "displayAll"},
+                {"🆕 Створити колекцію", "createCollection"},
+                {"📁 Переглянути колекцію", "displayCollection"},
+                {"💥 Критична помилка", "criticalError"}
+        };
+
+        int row = 0, col = 0;
+        for (String[] b : buttons) {
+            Button btn = createStyledButton(b[0], b[1]);
+            grid.add(btn, col, row);
+            col++;
+            if (col == 2) {
+                col = 0;
+                row++;
             }
+        }
 
-            Command command = commandMap.get(choice);
+        BorderPane root = new BorderPane();
+        root.setCenter(grid);
+        root.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(0, 1, 1, 0, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.web("#F19CBB")),
+                        new Stop(1, Color.web("#D8BFD8"))),
+                CornerRadii.EMPTY, Insets.EMPTY)));
+
+        ImageView disk = new ImageView(
+                new Image(Objects.requireNonNull(getClass().getResource("/brokendisk.png")).toExternalForm())
+        );
+        disk.setFitWidth(180);
+        disk.setFitHeight(100);
+
+        RotateTransition rotate = new RotateTransition(Duration.seconds(5), disk);
+        rotate.setByAngle(360);
+        rotate.setCycleCount(RotateTransition.INDEFINITE);
+        rotate.setInterpolator(Interpolator.LINEAR);
+        rotate.play();
+
+        Text rotatingText = new Text("🎵 Керуйте своєю музичною колекцією!");
+        rotatingText.setFont(Font.font("Arial", 18));
+        rotatingText.setFill(Color.DARKMAGENTA);
+
+        VBox topBox = new VBox(10, disk, rotatingText);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setPadding(new Insets(20));
+
+        root.setTop(topBox);
+
+        Scene scene = new Scene(root, 700, 600);
+        primaryStage.setScene(scene);
+    }
+
+    Button createStyledButton(String text, String commandKey) {
+        Button button = new Button(text);
+        button.setPrefWidth(260);
+        button.setPrefHeight(60);
+        button.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: #ffffff; -fx-text-fill: #800080;");
+        button.setOnAction(e -> {
+            Command command = commandMap.get(commandKey);
             if (command != null) {
                 try {
                     command.execute();
-                    System.out.println("Command executed successfully.");
-                } catch (Exception e) {
-                    System.out.println("Error executing command.");
-                    errorLogger.error("Error executing command: {}", e.getMessage());
+                } catch (Exception ex) {
+                    showAlert("Помилка", "Помилка при виконанні команди: " + ex.getMessage());
                 }
             } else {
-                System.out.println("Invalid choice. Please try again.");
-                errorLogger.error("Invalid choice");
+                showAlert("Помилка", "Команда не знайдена.");
             }
-        }
+        });
+        return button;
     }
 
-    private void printMenu() {
-        System.out.println("\n\t\t\t\t  === MENU ===");
-        System.out.println("==================================================");
-
-        for (int key : commandMap.keySet()) {
-            Command command = commandMap.get(key);
-            System.out.println("\t" + key + ". " + command.printInfo());
-        }
-
-        System.out.println("\t0. Exit");
-        System.out.println("==================================================");
-        System.out.print("Choose an option (0-" + commandMap.size() + "): ");
+    void initializeCommands() {
+        commandMap.put("displayAll", new DisplayAllCompos());
+        commandMap.put("criticalError", new CriticalError());
+        commandMap.put("addCompos", new AddCompos());
+        commandMap.put("displayCollection", new DisplayCollection());
+        commandMap.put("createCollection", new CreateCollection());
     }
 
-    private void initializeCommands() {
-        commandMap.put(1, new AddCompos(scanner));
-        commandMap.put(2, new DisplayAllCompos());
-        commandMap.put(3, new AddToCollection(scanner));
-        commandMap.put(4, new DeleteFromCollection(scanner));
-        commandMap.put(5, new DisplayCollection(scanner));
-        commandMap.put(6, new CalculateDuration());
-        commandMap.put(7, new SortingByStyle(scanner));
-        commandMap.put(8, new FindCompositions(scanner));
-        commandMap.put(9, new CriticalError());
-        commandMap.put(10, new CreateCollection(scanner));
-        commandMap.put(11, new DeleteCollection(scanner));
-        commandMap.put(12, new DeleteCompos(scanner));
+    public static Stage getPrimaryStage() {
+        return instance.primaryStage;
     }
 
-    private int getUserChoice() {
-        while (true) {
-            String input = scanner.nextLine();
-            try {
-                int choice = Integer.parseInt(input);
-                if (choice == 0 || commandMap.containsKey(choice)) {
-                    return choice;
-                } else {
-                    System.out.print("Invalid choice. Please try again: ");
-                    logger.warn("Invalid menu choice: {}", input);
-                }
-            } catch (NumberFormatException e) {
-                System.out.print("Invalid input, please enter a number: ");
-                errorLogger.error("Invalid input, not a number: {}", e.getMessage());
-            }
-        }
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

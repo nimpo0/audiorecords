@@ -1,27 +1,34 @@
 package commands;
-
 import database.CollectionBD;
-
-import java.util.Scanner;
+import javafx.scene.control.Alert;
 
 public class DeleteCollection implements Command {
-    private final Scanner scanner;
     private final CollectionBD collectionBD = new CollectionBD();
+    private final String collectionName;
 
-    public DeleteCollection(Scanner scanner) {
-        this.scanner = scanner;
+    public DeleteCollection(String collectionName) {
+        this.collectionName = collectionName;
     }
 
     @Override
     public void execute() {
-        System.out.print("Enter the name of the collection to delete: ");
-        String collectionName = scanner.nextLine();
+        if (collectionName == null || collectionName.trim().isEmpty()) return;
 
         collectionBD.deleteCollection(collectionName);
+        showMessage("🗑 Колекцію '" + collectionName + "' видалено.");
+        new DisplayCollection().execute();
     }
 
     @Override
     public String printInfo() {
-        return "Delete a collection";
+        return "Видалити колекцію.";
+    }
+
+    private void showMessage(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Результат");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }
