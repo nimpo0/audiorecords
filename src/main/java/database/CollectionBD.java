@@ -35,7 +35,7 @@ public class CollectionBD extends DatabaseManager {
         }
     }
 
-    public List<Collection> getAllCollections() {
+    public static List<Collection> getAllCollections() {
         List<Collection> list = new ArrayList<>();
         String sql = "SELECT id, name FROM collections";
 

@@ -21,11 +21,19 @@ import java.util.Objects;
 
 public class Menu extends Application {
     final Map<String, Command> commandMap = new HashMap<>();
-    private Stage primaryStage;
-    private static Menu instance;
+    private static Stage primaryStage;
+    public static Menu instance;
 
     public static Menu getInstance() {
         return instance;
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public static void setPrimaryStage(Stage stage) {
+        primaryStage = stage;
     }
 
     @Override
@@ -48,13 +56,13 @@ public class Menu extends Application {
                 CornerRadii.EMPTY, Insets.EMPTY);
         welcomePane.setBackground(new Background(backgroundFill));
 
-        Text welcomeText = new Text("🎶 Ласкаво просимо до Music Collection!");
+        Text welcomeText = new Text("🎶 Welcome to Music Collection!");
         welcomeText.setFont(Font.font("Arial", 24));
         welcomeText.setFill(Color.WHITE);
         welcomeText.setWrappingWidth(400);
         welcomeText.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        Button startButton = new Button("🚀 Розпочати");
+        Button startButton = new Button("🚀 Start");
         startButton.setStyle("-fx-font-size: 16px; -fx-background-radius: 20; -fx-background-color: white; -fx-text-fill: purple;");
         startButton.setOnAction(e -> showMainMenu());
 
@@ -63,7 +71,7 @@ public class Menu extends Application {
 
         welcomePane.setCenter(centerBox);
 
-        Scene scene = new Scene(welcomePane, 600, 500);
+        Scene scene = new Scene(welcomePane, 700, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Music Collection");
         primaryStage.show();
@@ -156,10 +164,6 @@ public class Menu extends Application {
         commandMap.put("addCompos", new AddCompos());
         commandMap.put("displayCollection", new DisplayCollection());
         commandMap.put("createCollection", new CreateCollection());
-    }
-
-    public static Stage getPrimaryStage() {
-        return instance.primaryStage;
     }
 
     private void showAlert(String title, String message) {

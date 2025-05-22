@@ -25,12 +25,20 @@ public class Composition {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getStyle() {
         return style;
     }
 
     public int getDuration() {
         return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public String getAuthor() {

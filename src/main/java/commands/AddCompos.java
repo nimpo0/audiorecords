@@ -21,8 +21,31 @@ public class AddCompos implements Command {
     private static final Logger logger = LogManager.getLogger(AddCompos.class);
     private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
+    public TextField nameField = new TextField();
+    public TextField styleField = new TextField();
+    public TextField authorField = new TextField();
+    public TextField durationField = new TextField();
+    public TextField audioPathField = new TextField();
+    public TextArea lyricsArea = new TextArea();
+
     @Override
     public void execute() {
+        Menu.getPrimaryStage().getScene().setRoot(createLayout());
+    }
+
+    @Override
+    public String printInfo() {
+        return "Add a new composition.";
+    }
+
+    protected File showAudioFileDialog() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Виберіть аудіофайл");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Аудіофайли", "*.mp3", "*.wav"));
+        return fileChooser.showOpenDialog(Menu.getPrimaryStage());
+    }
+
+    public BorderPane createLayout() {
         Label title = new Label("Додати нову композицію");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 26));
         title.setTextFill(Color.WHITE);
@@ -36,35 +59,21 @@ public class AddCompos implements Command {
         HBox titleBox = new HBox(10, icon, title);
         titleBox.setAlignment(Pos.CENTER);
 
-        TextField nameField = new TextField();
         nameField.setPromptText("Назва композиції");
-
-        TextField authorField = new TextField();
         authorField.setPromptText("Ім’я автора");
-
-        TextField styleField = new TextField();
         styleField.setPromptText("Стиль композиції");
-
-        TextField durationField = new TextField();
         durationField.setPromptText("Тривалість (у секундах)");
 
-        TextArea lyricsArea = new TextArea();
         lyricsArea.setPromptText("Текст пісні");
         lyricsArea.setWrapText(true);
         lyricsArea.setPrefRowCount(4);
 
-        TextField audioPathField = new TextField();
         audioPathField.setPromptText("Шлях до аудіофайлу");
         audioPathField.setEditable(false);
 
         Button browseButton = new Button("🎵 Вибрати аудіо");
         browseButton.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Виберіть аудіофайл");
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Аудіофайли", "*.mp3", "*.wav")
-            );
-            File file = fileChooser.showOpenDialog(Menu.getPrimaryStage());
+            File file = showAudioFileDialog();
             if (file != null) {
                 audioPathField.setText(file.toURI().toString());
             }
@@ -137,15 +146,10 @@ public class AddCompos implements Command {
                 new CornerRadii(10),
                 Insets.EMPTY)));
 
-        Menu.getPrimaryStage().getScene().setRoot(layout);
+        return layout;
     }
 
-    @Override
-    public String printInfo() {
-        return "Add a new composition.";
-    }
-
-    private void showAlert(String msg) {
+    protected void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Інформація");
         alert.setHeaderText(null);

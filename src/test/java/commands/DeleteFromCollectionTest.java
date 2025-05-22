@@ -1,86 +1,91 @@
 package commands;
+import database.CollectionCompositionBD;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
 
-import composition.ComposCollection;
-import composition.Composition;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
-
-import static org.mockito.Mockito.*;
-
 class DeleteFromCollectionTest {
-    private ByteArrayInputStream testIn;
-    private ByteArrayOutputStream testOut;
 
-    private ComposCollection collection;
-    private DeleteFromCollection deleteFromCollection;
+    private MockedConstruction<CollectionCompositionBD> mockedCollectionCompositionBD;
 
     @BeforeEach
     void setUp() {
-        collection = mock(ComposCollection.class);
-        testOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(testOut));
+        mockedCollectionCompositionBD = Mockito.mockConstruction(CollectionCompositionBD.class);
     }
 
     @AfterEach
     void tearDown() {
-        System.setOut(System.out);
+        mockedCollectionCompositionBD.close();
     }
 
     @Test
-    void testExecuteEmptyCollection() {
-        when(collection.isEmpty()).thenReturn(true);
+    void testExecute_CollectionNotFound_ShowsAlert() {
+        TestableDeleteFromCollection deleteCmd = new TestableDeleteFromCollection("song", "missingCollection");
 
-        testIn = new ByteArrayInputStream("".getBytes());
-        Scanner scanner = new Scanner(testIn);
-        deleteFromCollection = new DeleteFromCollection(collection, scanner);
-        deleteFromCollection.execute();
+        CollectionCompositionBD mockedBD = mockedCollectionCompositionBD.constructed().get(0);
+        Mockito.when(mockedBD.getCollectionIdByName("missingCollection")).thenReturn(-1);
 
-        String output = testOut.toString();
-        assertTrue(output.contains("The collection is empty."));
+        deleteCmd.execute();
+
+        assertEquals("Колекція не знайдена", deleteCmd.alertTitle);
+        assertTrue(deleteCmd.alertMessage.contains("missingCollection"));
+
+        Mockito.verify(mockedBD, Mockito.never()).removeCompositionFromCollection(Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
-    void testExecuteCompositionSuccessfullyDeleted() {
-        when(collection.isEmpty()).thenReturn(false);
+    void testExecute_SuccessfulDeletion_ShowsSuccessAlert() {
+        TestableDeleteFromCollection deleteCmd = new TestableDeleteFromCollection("song1", "myCollection");
 
-        Composition composition = new Composition("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics...");
-        when(collection.findCompositionByName("Symphony No.5")).thenReturn(composition);
+        CollectionCompositionBD mockedBD = mockedCollectionCompositionBD.constructed().get(0);
+        Mockito.when(mockedBD.getCollectionIdByName("myCollection")).thenReturn(1);
 
-        String userInput = "Symphony No.5";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+        Mockito.doNothing().when(mockedBD).removeCompositionFromCollection("song1", "myCollection");
 
-        deleteFromCollection = new DeleteFromCollection(collection, scanner);
-        deleteFromCollection.execute();
+        deleteCmd.execute();
 
-        verify(collection, times(1)).deleteComposition(composition);
-
-        String output = testOut.toString();
-        assertTrue(output.contains("Composition \"Symphony No.5\" successfully deleted from the collection."));
+        Mockito.verify(mockedBD).removeCompositionFromCollection("song1", "myCollection");
+        assertEquals("Успішно", deleteCmd.alertTitle);
+        assertTrue(deleteCmd.alertMessage.contains("видалено"));
     }
 
     @Test
-    void testExecuteCompositionNotFound() {
-        when(collection.isEmpty()).thenReturn(false);
-        when(collection.findCompositionByName("Symphony No.5")).thenReturn(null);
+    void testExecute_ExceptionThrown_ShowsErrorAlert() {
+        TestableDeleteFromCollection deleteCmd = new TestableDeleteFromCollection("songErr", "collErr");
 
-        String userInput = "Symphony No.5";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+        CollectionCompositionBD mockedBD = mockedCollectionCompositionBD.constructed().get(0);
+        Mockito.when(mockedBD.getCollectionIdByName("collErr")).thenReturn(1);
 
-        deleteFromCollection = new DeleteFromCollection(collection, scanner);
-        deleteFromCollection.execute();
+        Mockito.doThrow(new RuntimeException("DB failure"))
+                .when(mockedBD).removeCompositionFromCollection("songErr", "collErr");
 
-        verify(collection, never()).deleteComposition(any(Composition.class));
+        deleteCmd.execute();
 
-        String output = testOut.toString();
-        assertTrue(output.contains("Composition \"Symphony No.5\" not found in the collection."));
+        assertEquals("Помилка", deleteCmd.alertTitle);
+        assertTrue(deleteCmd.alertMessage.contains("DB failure"));
+    }
+
+    @Test
+    void testPrintInfo() {
+        DeleteFromCollection deleteCmd = new DeleteFromCollection("any", "any");
+        String info = deleteCmd.printInfo();
+        assertEquals("Видалити композицію з колекції.", info);
+    }
+
+    private static class TestableDeleteFromCollection extends DeleteFromCollection {
+        String alertTitle;
+        String alertMessage;
+
+        public TestableDeleteFromCollection(String compositionName, String collectionName) {
+            super(compositionName, collectionName);
+        }
+
+        @Override
+        protected void showAlert(String title, String message) {
+            this.alertTitle = title;
+            this.alertMessage = message;
+        }
     }
 }

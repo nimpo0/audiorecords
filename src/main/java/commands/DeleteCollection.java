@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 
 public class DeleteCollection implements Command {
     private final CollectionBD collectionBD = new CollectionBD();
-    private final String collectionName;
+    protected final String collectionName;
 
     public DeleteCollection(String collectionName) {
         this.collectionName = collectionName;
@@ -24,11 +24,11 @@ public class DeleteCollection implements Command {
         return "Видалити колекцію.";
     }
 
-    private void showMessage(String msg) {
+    protected void showMessage(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Результат");
         alert.setHeaderText(null);
         alert.setContentText(msg);
-        alert.showAndWait();
+        alert.show();
     }
 }

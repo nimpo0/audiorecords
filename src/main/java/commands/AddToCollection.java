@@ -20,13 +20,19 @@ public class AddToCollection implements Command {
     private static final Logger logger = LogManager.getLogger(AddToCollection.class);
     private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
-    private final CollectionBD collectionBD = new CollectionBD();
-    private final CollectionCompositionBD relationBD = new CollectionCompositionBD();
+    private CollectionBD collectionBD = new CollectionBD();
+    private CollectionCompositionBD relationBD = new CollectionCompositionBD();
 
     private final String collectionName;
 
     public AddToCollection(String collectionName) {
         this.collectionName = collectionName;
+    }
+
+    public AddToCollection(String collectionName, CollectionBD collectionBD, CollectionCompositionBD relationBD) {
+        this.collectionName = collectionName;
+        this.collectionBD = collectionBD;
+        this.relationBD = relationBD;
     }
 
     @Override
@@ -82,7 +88,7 @@ public class AddToCollection implements Command {
         return "Add a composition to a specific collection.";
     }
 
-    private Optional<String> showChoiceDialog(String title, String header, List<String> choices) {
+    protected Optional<String> showChoiceDialog(String title, String header, List<String> choices) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.setTitle(title);
@@ -123,7 +129,7 @@ public class AddToCollection implements Command {
         return confirmed[0] ? Optional.of(choiceBox.getValue()) : Optional.empty();
     }
 
-    private void showStyledMessage(String title, String content) {
+    protected void showStyledMessage(String title, String content) {
         Stage msgStage = new Stage();
         msgStage.initModality(Modality.APPLICATION_MODAL);
         msgStage.setTitle(title);
@@ -151,4 +157,6 @@ public class AddToCollection implements Command {
         msgStage.setScene(scene);
         msgStage.showAndWait();
     }
+
+
 }

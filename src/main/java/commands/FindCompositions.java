@@ -48,7 +48,7 @@ public class FindCompositions {
         return found;
     }
 
-    private int[] showDurationInputDialog() {
+    protected int[] showDurationInputDialog() {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.setTitle("Фільтр за тривалістю");
@@ -106,7 +106,7 @@ public class FindCompositions {
         return result[0];
     }
 
-    private void showStyledMessage(String message) {
+    void showStyledMessage(String message) {
         Stage msgStage = new Stage();
         msgStage.initModality(Modality.APPLICATION_MODAL);
         msgStage.setTitle("Повідомлення");

@@ -14,12 +14,42 @@ import mainPackage.Menu;
 import java.util.Objects;
 
 public class CreateCollection implements Command {
-    private final CollectionBD collectionBD = new CollectionBD();
+
+    private final CollectionBD collectionBD;
+    private TextField collectionNameField;
+
+    public CreateCollection() {
+        this.collectionBD = new CollectionBD();
+    }
 
     @Override
     public void execute() {
+        BorderPane layout = createLayout();
+        Menu.getPrimaryStage().getScene().setRoot(layout);
+    }
+
+    @Override
+    public String printInfo() {
+        return "Створити нову колекцію.";
+    }
+
+    public void handleCollectionCreation(String collectionName) {
+        String name = collectionName.trim();
+        if (name.isEmpty()) {
+            showAlert("Введіть назву колекції.");
+            return;
+        }
+
+        collectionBD.insertCollection(name);
+        showAlert("Колекцію '" + name + "' успішно створено.");
+        if (collectionNameField != null) {
+            collectionNameField.clear();
+        }
+    }
+
+    public BorderPane createLayout() {
         Label title = new Label("Створити нову колекцію");
-        title.setFont(Font.font("Arial",FontWeight.BOLD, 26));
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 26));
         title.setTextFill(Color.WHITE);
 
         ImageView icon = new ImageView(
@@ -31,7 +61,7 @@ public class CreateCollection implements Command {
         VBox titleBox = new VBox(10, icon, title);
         titleBox.setAlignment(Pos.CENTER);
 
-        TextField collectionNameField = new TextField();
+        collectionNameField = new TextField();
         collectionNameField.setPromptText("Назва колекції");
         collectionNameField.setMaxWidth(300);
 
@@ -39,16 +69,7 @@ public class CreateCollection implements Command {
         createButton.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: #ffffff; -fx-text-fill: #800080;");
         createButton.setPrefWidth(150);
         createButton.setPrefHeight(40);
-        createButton.setOnAction(e -> {
-            String collectionName = collectionNameField.getText().trim();
-            if (collectionName.isEmpty()) {
-                showAlert("Введіть назву колекції.");
-                return;
-            }
-            collectionBD.insertCollection(collectionName);
-            showAlert("Колекцію '" + collectionName + "' успішно створено.");
-            collectionNameField.clear();
-        });
+        createButton.setOnAction(e -> handleCollectionCreation(collectionNameField.getText()));
 
         Button backButton = new Button("⬅ Назад до меню");
         backButton.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: #ffffff; -fx-text-fill: #800080;");
@@ -72,12 +93,7 @@ public class CreateCollection implements Command {
                 new CornerRadii(10),
                 Insets.EMPTY)));
 
-        Menu.getPrimaryStage().getScene().setRoot(layout);
-    }
-
-    @Override
-    public String printInfo() {
-        return "Створити нову колекцію.";
+        return layout;
     }
 
     private void showAlert(String msg) {

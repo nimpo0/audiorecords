@@ -1,53 +1,61 @@
 package commands;
-
-import composition.ComposCollection;
 import composition.Composition;
+import database.CollectionBD;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.List;
-
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class CalculateDurationTest {
+class CalculateDurationTest {
 
-    private ComposCollection collection;
     private CalculateDuration calculateDuration;
+    private CollectionBD mockCollectionBD;
 
     @BeforeEach
-    public void setUp() {
-        collection = mock(ComposCollection.class);
-        calculateDuration = new CalculateDuration(collection);
+    void setUp() {
+        mockCollectionBD = mock(CollectionBD.class);
+        calculateDuration = new CalculateDuration() {
+            {
+                this.collectionBD = mockCollectionBD;
+            }
+        };
     }
 
     @Test
-    public void testCalculateDurationWithEmptyCollection() {
-        when(collection.isEmpty()).thenReturn(true);
-        calculateDuration.execute();
-        verify(collection).isEmpty();
+    void shouldReturnMinusOneIfCollectionNameIsNull() {
+        int result = calculateDuration.getTotalDuration(null);
+        assertEquals(-1, result);
     }
 
     @Test
-    public void testCalculateDurationWithCompositions() {
-        Composition comp1 = mock(Composition.class);
-        Composition comp2 = mock(Composition.class);
-        when(comp1.getComposDuration()).thenReturn(120);
-        when(comp2.getComposDuration()).thenReturn(180);
+    void shouldReturnMinusOneIfCollectionNameIsEmpty() {
+        int result = calculateDuration.getTotalDuration("   ");
+        assertEquals(-1, result);
+    }
 
-        when(collection.isEmpty()).thenReturn(false);
-        when(collection.getCompositions()).thenReturn(List.of(comp1, comp2));
+    @Test
+    void shouldReturnMinusOneIfCollectionDoesNotExistOrEmpty() {
+        when(mockCollectionBD.getCompositionsForCollection("MyCollection")).thenReturn(null);
+        int resultNull = calculateDuration.getTotalDuration("MyCollection");
+        assertEquals(-1, resultNull);
 
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        calculateDuration.execute();
+        when(mockCollectionBD.getCompositionsForCollection("MyCollection")).thenReturn(List.of());
+        int resultEmpty = calculateDuration.getTotalDuration("MyCollection");
+        assertEquals(-1, resultEmpty);
+    }
 
-        String output = outContent.toString();
-        assertTrue(output.contains("Total duration of compositions in the collection: 5 min 0 sec."),
-                "The total duration should be 5 minutes and 0 seconds");
+    @Test
+    void shouldReturnSumOfDurations() {
+        List<Composition> compositions = List.of(
+                new Composition(1, "Song1", "Pop", 120, "Author1", "Text1", "Path1"),
+                new Composition(2, "Song2", "Rock", 180, "Author2", "Text2", "Path2"),
+                new Composition(3, "Song3", "Jazz", 240, "Author3", "Text3", "Path3")
+        );
 
-        System.setOut(System.out);
+        when(mockCollectionBD.getCompositionsForCollection("MyCollection")).thenReturn(compositions);
+
+        int result = calculateDuration.getTotalDuration("MyCollection");
+        assertEquals(120 + 180 + 240, result);
     }
 }

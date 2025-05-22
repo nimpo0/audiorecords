@@ -5,7 +5,6 @@ import database.CollectionBD;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -26,20 +25,20 @@ import java.util.Objects;
 public class DisplayCollection implements Command {
     private static final Logger logger = LogManager.getLogger(DisplayCollection.class);
     private final CollectionBD collectionBD = new CollectionBD();
+    private final CalculateDuration calculator = new CalculateDuration();
 
     @Override
     public void execute() {
         showAllCollections();
     }
 
-    private void showAllCollections() {
+    public void showAllCollections() {
         VBox root = new VBox(20);
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.TOP_CENTER);
 
         root.setBackground(new Background(new BackgroundFill(
-                new LinearGradient(0, 1, 1, 0, true,
-                        CycleMethod.NO_CYCLE,
+                new LinearGradient(0, 1, 1, 0, true, CycleMethod.NO_CYCLE,
                         new Stop(0, Color.web("#F19CBB")),
                         new Stop(1, Color.web("#D8BFD8"))),
                 new CornerRadii(10),
@@ -49,15 +48,14 @@ public class DisplayCollection implements Command {
         header.setFont(Font.font("Arial", 28));
         header.setTextFill(Color.DARKMAGENTA);
 
-        ImageView icon = new ImageView(
-                new Image(Objects.requireNonNull(getClass().getResource("/girl.png")).toExternalForm())
+        ImageView icon = new ImageView(new Image(
+                Objects.requireNonNull(getClass().getResource("/girl.png")).toExternalForm())
         );
         icon.setFitWidth(80);
         icon.setFitHeight(100);
 
         HBox headerBox = new HBox(10, header, icon);
         headerBox.setAlignment(Pos.CENTER);
-
         root.getChildren().add(headerBox);
 
         GridPane grid = new GridPane();
@@ -65,52 +63,11 @@ public class DisplayCollection implements Command {
         grid.setVgap(20);
         grid.setAlignment(Pos.CENTER);
 
-        List<Collection> allCollections = CollectionBD.getAllCollections();
-        CalculateDuration calculator = new CalculateDuration();
+        List<Collection> allCollections = getAllCollections();
 
         int col = 0, row = 0;
-
         for (Collection collection : allCollections) {
-            String collectionName = collection.getName();
-            List<Composition> compositions = collectionBD.getCompositionsForCollection(collectionName);
-            int count = compositions.size();
-            int duration = calculator.getTotalDuration(collectionName);
-
-            VBox card = new VBox(8);
-            card.setPadding(new Insets(15));
-            card.setAlignment(Pos.CENTER_LEFT);
-            card.setPrefWidth(300);
-            card.setBackground(new Background(new BackgroundFill(
-                    new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                            new Stop(0, Color.LAVENDERBLUSH),
-                            new Stop(1, Color.MEDIUMPURPLE)),
-                    new CornerRadii(15), Insets.EMPTY)));
-            card.setBorder(new Border(new BorderStroke(Color.web("#8E4585"), BorderStrokeStyle.SOLID, new CornerRadii(15), new BorderWidths(2))));
-
-            Label name = new Label("📁 " + collectionName);
-            name.setFont(Font.font("Arial", 18));
-            name.setTextFill(Color.web("#800080"));
-
-            String durationText = duration >= 0
-                    ? String.format("Кількість пісень: %d\nТривалість: %d хв %d сек", count, duration / 60, duration % 60)
-                    : String.format("Кількість пісень: %d\nТривалість: невизначено", count);
-
-            Label info = new Label(durationText);
-            info.setFont(Font.font("Arial", 14));
-            info.setTextFill(Color.web("#800080"));
-
-            Button openBtn = new Button("Відкрити");
-            openBtn.setStyle("-fx-background-radius: 15; -fx-font-size: 13px; -fx-background-color: white; -fx-text-fill: #800080;");
-            openBtn.setOnAction(e -> {
-                new DisplayAllCompos(compositions, "🎼 Композиції з '" + collectionName + "'", collectionName).execute();
-            });
-
-            Button deleteBtn = new Button("🗑 Видалити");
-            deleteBtn.setStyle("-fx-background-radius: 15; -fx-font-size: 13px; -fx-background-color: white; -fx-text-fill: #4B0082;");
-            deleteBtn.setOnAction(e -> new DeleteCollection(collectionName).execute());
-
-            card.getChildren().addAll(name, info, openBtn, deleteBtn);
-
+            VBox card = createCollectionCard(collection);
             grid.add(card, col, row);
 
             col++;
@@ -125,35 +82,75 @@ public class DisplayCollection implements Command {
         Button backButton = new Button("⬅ Назад до меню");
         backButton.setStyle("-fx-background-radius: 15; -fx-font-size: 14px; -fx-background-color: white; -fx-text-fill: #800080;");
         backButton.setOnAction(e -> Menu.getInstance().showMainMenu());
-
         root.getChildren().add(backButton);
 
         ScrollPane scrollPane = new ScrollPane(root);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
         scrollPane.setBackground(new Background(new BackgroundFill(
-                new LinearGradient(0, 1, 1, 0, true,
-                        CycleMethod.NO_CYCLE,
+                new LinearGradient(0, 1, 1, 0, true, CycleMethod.NO_CYCLE,
                         new Stop(0, Color.LAVENDERBLUSH),
                         new Stop(1, Color.MEDIUMPURPLE)),
-                CornerRadii.EMPTY,
-                Insets.EMPTY)));
+                CornerRadii.EMPTY, Insets.EMPTY)));
 
         Scene scene = new Scene(scrollPane, 700, 600);
         Menu.getPrimaryStage().setScene(scene);
         logger.info("Сторінка всіх плейлистів відображена.");
     }
 
+    public VBox createCollectionCard(Collection collection) {
+        String collectionName = collection.getName();
+        List<Composition> compositions = getCompositionsForCollection(collectionName);
+        int count = compositions.size();
+        int duration = calculator.getTotalDuration(collectionName);
+
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(15));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setPrefWidth(300);
+        card.setBackground(new Background(new BackgroundFill(
+                new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.LAVENDERBLUSH),
+                        new Stop(1, Color.MEDIUMPURPLE)),
+                new CornerRadii(15), Insets.EMPTY)));
+        card.setBorder(new Border(new BorderStroke(Color.web("#8E4585"), BorderStrokeStyle.SOLID, new CornerRadii(15), new BorderWidths(2))));
+
+        Label name = new Label("📁 " + collectionName);
+        name.setFont(Font.font("Arial", 18));
+        name.setTextFill(Color.web("#800080"));
+
+        Label info = new Label(getDurationText(count, duration));
+        info.setFont(Font.font("Arial", 14));
+        info.setTextFill(Color.web("#800080"));
+
+        Button openBtn = new Button("Відкрити");
+        openBtn.setStyle("-fx-background-radius: 15; -fx-font-size: 13px; -fx-background-color: white; -fx-text-fill: #800080;");
+        openBtn.setOnAction(e -> new DisplayAllCompos(compositions, "🎼 Композиції з '" + collectionName + "'", collectionName).execute());
+
+        Button deleteBtn = new Button("🗑 Видалити");
+        deleteBtn.setStyle("-fx-background-radius: 15; -fx-font-size: 13px; -fx-background-color: white; -fx-text-fill: #4B0082;");
+        deleteBtn.setOnAction(e -> new DeleteCollection(collectionName).execute());
+
+        card.getChildren().addAll(name, info, openBtn, deleteBtn);
+        return card;
+    }
+
+    public String getDurationText(int count, int duration) {
+        return duration >= 0
+                ? String.format("Кількість пісень: %d\nТривалість: %d хв %d сек", count, duration / 60, duration % 60)
+                : String.format("Кількість пісень: %d\nТривалість: невизначено", count);
+    }
+
+    public List<Collection> getAllCollections() {
+        return CollectionBD.getAllCollections();
+    }
+
+    public List<Composition> getCompositionsForCollection(String collectionName) {
+        return collectionBD.getCompositionsForCollection(collectionName);
+    }
+
     @Override
     public String printInfo() {
         return "Переглянути всі плейлисти та композиції в них.";
-    }
-
-    private void showMessage(String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Повідомлення");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
     }
 }

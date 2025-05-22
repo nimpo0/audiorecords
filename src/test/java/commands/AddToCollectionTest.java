@@ -1,84 +1,173 @@
 package commands;
-
-import composition.ComposCollection;
 import composition.Composition;
+import database.CollectionBD;
+import database.CollectionCompositionBD;
+import database.CompositionBD;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import java.util.List;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import java.io.ByteArrayInputStream;
-import java.util.Scanner;
+class AddToCollectionTest {
 
-public class AddToCollectionTest {
-
-    private ComposCollection collection;
-    private ComposCollection allCompositions;
     private AddToCollection addToCollection;
+    private String collectionName = "MyCollection";
 
-    private ByteArrayInputStream testIn;
+    static class TestableAddToCollection extends AddToCollection {
+        String lastMessageTitle = null;
+        String lastMessageContent = null;
+        List<String> lastChoices = null;
+        String choiceToReturn = null;
+
+        public TestableAddToCollection(String collectionName, CollectionBD collectionBD, CollectionCompositionBD relationBD) {
+            super(collectionName, collectionBD, relationBD);
+        }
+
+        @Override
+        protected Optional<String> showChoiceDialog(String title, String header, List<String> choices) {
+            this.lastChoices = choices;
+            return Optional.ofNullable(choiceToReturn);
+        }
+
+        @Override
+        protected void showStyledMessage(String title, String content) {
+            this.lastMessageTitle = title;
+            this.lastMessageContent = content;
+        }
+    }
+
+    private CollectionBD mockCollectionBD;
+    private CollectionCompositionBD mockRelationBD;
 
     @BeforeEach
-    public void setUp() {
-        collection = new ComposCollection();
-        allCompositions = new ComposCollection();
+    void setup() {
+        mockCollectionBD = mock(CollectionBD.class);
+        mockRelationBD = mock(CollectionCompositionBD.class);
+        addToCollection = new TestableAddToCollection(collectionName, mockCollectionBD, mockRelationBD);
     }
 
     @Test
-    public void testNoAvailableCompositionsToAdd() {
-        testIn = new ByteArrayInputStream("".getBytes());
-        Scanner scanner = new Scanner(testIn);
+    void testCollectionNotFound() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(-1);
 
-        addToCollection = new AddToCollection(collection, allCompositions, scanner);
         addToCollection.execute();
 
-        assertTrue(collection.isEmpty(), "The collection should remain empty.");
+        TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+        assertEquals("Колекція не знайдена", testable.lastMessageTitle);
+        assertTrue(testable.lastMessageContent.contains(collectionName));
     }
 
     @Test
-    public void testCompositionAlreadyInCollection() {
-        Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompositions.addToAllCompositions(comp);
-        collection.addComposition(comp);
+    void testNoAvailableCompositions() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(1);
 
-        String userInput = "Symphony No.9\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+        List<Composition> allComps = List.of(new Composition(1,"Song1", "Rock", 180, "Author", "Lyrics", "path"));
+        List<Composition> currentComps = List.of(new Composition(2,"Song1", "Rock", 180, "Author", "Lyrics", "path"));
 
-        addToCollection = new AddToCollection(collection, allCompositions, scanner);
-        addToCollection.execute();
+        try (MockedStatic<CompositionBD> mockedCompositionBD = Mockito.mockStatic(CompositionBD.class)) {
+            mockedCompositionBD.when(CompositionBD::getAllCompositions).thenReturn(allComps);
+            when(mockCollectionBD.getCompositionsForCollection(collectionName)).thenReturn(currentComps);
 
-        assertEquals(1, collection.getCompositions().size(), "The composition should not be duplicated.");
+            addToCollection.execute();
+
+            TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+            assertEquals("Немає доступних композицій", testable.lastMessageTitle);
+        }
     }
 
     @Test
-    public void testAddCompositionSuccess() {
-        Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompositions.addToAllCompositions(comp);
+    void testUserCancelsChoiceDialog() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(1);
 
-        String userInput = "Symphony No.9\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+        List<Composition> allComps = List.of(new Composition(2,"Song1", "Rock", 180, "Author", "Lyrics", "path"));
+        List<Composition> currentComps = List.of();
 
-        addToCollection = new AddToCollection(collection, allCompositions, scanner);
-        addToCollection.execute();
+        try (MockedStatic<CompositionBD> mockedCompositionBD = Mockito.mockStatic(CompositionBD.class)) {
+            mockedCompositionBD.when(CompositionBD::getAllCompositions).thenReturn(allComps);
+            when(mockCollectionBD.getCompositionsForCollection(collectionName)).thenReturn(currentComps);
 
-        assertEquals(1, collection.getCompositions().size(), "The composition should be added to the collection.");
-        assertTrue(collection.containsComposition(comp), "The collection should contain the added composition.");
+            TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+            testable.choiceToReturn = null;
+
+            addToCollection.execute();
+
+            assertNull(testable.lastMessageTitle);
+        }
     }
 
     @Test
-    public void testCompositionNotFound() {
-        Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompositions.addToAllCompositions(comp);
+    void testCompositionAlreadyAdded() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(1);
 
-        String userInput = "Something\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+        List<Composition> allComps = List.of(
+                new Composition(4, "Song1", "Rock", 180, "Author", "Lyrics", "path"),
+                new Composition(5, "Song2", "Pop", 200, "Author2", "Lyrics2", "path2")
+        );
 
-        addToCollection = new AddToCollection(collection, allCompositions, scanner);
-        addToCollection.execute();
+        List<Composition> currentComps = List.of(
+                new Composition(4, "Song1", "Rock", 180, "Author", "Lyrics", "path")
+        );
 
-        assertTrue(collection.isEmpty(), "The collection should remain empty.");
+        try (MockedStatic<CompositionBD> mockedCompositionBD = Mockito.mockStatic(CompositionBD.class)) {
+            mockedCompositionBD.when(CompositionBD::getAllCompositions).thenReturn(allComps);
+            when(mockCollectionBD.getCompositionsForCollection(collectionName)).thenReturn(currentComps);
+
+            TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+            testable.choiceToReturn = "Song1";
+
+            addToCollection.execute();
+            assertEquals("Композиція вже додана", testable.lastMessageTitle);
+        }
+    }
+
+    @Test
+    void testExceptionDuringExecution() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(1);
+        List<Composition> allComps = List.of(new Composition(1,"Song", "Rock", 180, "Author", "Lyrics", "path"));
+        when(mockCollectionBD.getCompositionsForCollection(collectionName)).thenReturn(List.of());
+
+        try (MockedStatic<CompositionBD> mockedCompositionBD = Mockito.mockStatic(CompositionBD.class)) {
+            mockedCompositionBD.when(CompositionBD::getAllCompositions).thenReturn(allComps);
+
+            TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+            testable.choiceToReturn = "Song";
+
+            doThrow(new RuntimeException("DB error")).when(mockRelationBD).addCompositionToCollection("Song", collectionName);
+
+            addToCollection.execute();
+            assertEquals("Помилка", testable.lastMessageTitle);
+            assertTrue(testable.lastMessageContent.contains("DB error"));
+        }
+    }
+
+
+    @Test
+    void testSuccessfulAdd() {
+        when(mockRelationBD.getCollectionIdByName(collectionName)).thenReturn(1);
+
+        List<Composition> allComps = List.of(
+                new Composition(6,"Song1", "Rock", 180, "Author", "Lyrics", "path"),
+                new Composition(7,"Song2", "Pop", 200, "Author2", "Lyrics2", "path2")
+        );
+        List<Composition> currentComps = List.of(new Composition(6,"Song1", "Rock", 180, "Author", "Lyrics", "path"));
+
+        try (MockedStatic<CompositionBD> mockedCompositionBD = Mockito.mockStatic(CompositionBD.class)) {
+            mockedCompositionBD.when(CompositionBD::getAllCompositions).thenReturn(allComps);
+            when(mockCollectionBD.getCompositionsForCollection(collectionName)).thenReturn(currentComps);
+
+            TestableAddToCollection testable = (TestableAddToCollection) addToCollection;
+            testable.choiceToReturn = "Song2";
+
+            addToCollection.execute();
+            verify(mockRelationBD).addCompositionToCollection("Song2", collectionName);
+
+            assertEquals("Успішно", testable.lastMessageTitle);
+            assertTrue(testable.lastMessageContent.contains("Song2"));
+        }
+
     }
 }
-

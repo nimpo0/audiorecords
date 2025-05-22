@@ -16,18 +16,21 @@ public class DeleteCompos implements Command {
 
     @Override
     public void execute() {
+        boolean result;
         try {
-            boolean deleted = CompositionBD.deleteComposition(compositionName);
-            if (deleted) {
-                logger.info("Composition '{}' successfully deleted from the database.", compositionName);
-                showAlert("Успішно", "Композиція '" + compositionName + "' видалена з бази даних.");
-            } else {
-                logger.warn("Composition '{}' not found in the database.", compositionName);
-                showAlert("Не знайдено", "Композицію не знайдено в базі даних.");
-            }
+            result = CompositionBD.deleteComposition(compositionName);
         } catch (Exception e) {
             errorLogger.error("Error while deleting composition: {}", e.getMessage(), e);
             showAlert("Помилка", "Сталася помилка при видаленні: " + e.getMessage());
+            return;
+        }
+
+        if (result) {
+            logger.info("Composition '{}' successfully deleted from the database.", compositionName);
+            showAlert("Успішно", "Композиція '" + compositionName + "' видалена з бази даних.");
+        } else {
+            logger.warn("Composition '{}' not found in the database.", compositionName);
+            showAlert("Не знайдено", "Композицію не знайдено в базі даних.");
         }
     }
 
@@ -36,7 +39,7 @@ public class DeleteCompos implements Command {
         return "Delete a specific composition from the database.";
     }
 
-    private void showAlert(String title, String content) {
+    protected void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);

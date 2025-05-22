@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CalculateDuration {
     private static final Logger logger = LogManager.getLogger(CalculateDuration.class);
-    private final CollectionBD collectionBD = new CollectionBD();
+    CollectionBD collectionBD = new CollectionBD();
 
     public int getTotalDuration(String collectionName) {
         if (collectionName == null || collectionName.trim().isEmpty()) {

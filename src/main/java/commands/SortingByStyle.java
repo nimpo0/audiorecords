@@ -24,6 +24,14 @@ public class SortingByStyle {
         }
 
         String selected = showStyledChoiceDialog();
+        return sort(compositions, selected);
+    }
+
+    public List<Composition> sort(List<Composition> compositions, String selected) {
+        if (compositions == null || compositions.isEmpty()) {
+            logger.warn("Сортування база порожня.");
+            return null;
+        }
         if (selected == null) return null;
 
         if (selected.equals("По алфавіту")) {
@@ -37,7 +45,7 @@ public class SortingByStyle {
         return compositions;
     }
 
-    private void showStyledMessage(String message) {
+    protected void showStyledMessage(String message) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.setTitle("Повідомлення");
@@ -66,7 +74,7 @@ public class SortingByStyle {
         dialogStage.showAndWait();
     }
 
-    private String showStyledChoiceDialog() {
+    protected String showStyledChoiceDialog() {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.setTitle("Сортування за стилем");

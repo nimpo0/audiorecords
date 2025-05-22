@@ -11,8 +11,8 @@ public class DeleteFromCollection implements Command {
 
     private final CollectionCompositionBD relationBD = new CollectionCompositionBD();
 
-    private final String compositionName;
-    private final String collectionName;
+    protected final String compositionName;
+    protected final String collectionName;
 
     public DeleteFromCollection(String compositionName, String collectionName) {
         this.compositionName = compositionName;
@@ -43,7 +43,7 @@ public class DeleteFromCollection implements Command {
         return "Видалити композицію з колекції.";
     }
 
-    private void showAlert(String title, String message) {
+    protected void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);

@@ -19,6 +19,14 @@ public class Collection {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void addComposition(Composition composition) {
+        compositions.add(composition);
+    }
+
     public List<Composition> getCompositions() {
         return compositions;
     }

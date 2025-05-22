@@ -197,7 +197,6 @@ public class DisplayAllCompos implements Command {
         Button playButton = new Button();
         playButton.setStyle("-fx-background-radius: 20; -fx-font-size: 14px; -fx-background-color: white; -fx-text-fill: #4B0082;");
 
-// Перевірити стан — що показувати на кнопці
         if (activePlayer != null && activePlayer.getStatus() == MediaPlayer.Status.PLAYING && activePlayer.getMedia().getSource().equals(c.getAudioPath())) {
             playButton.setText("⏸");
         } else {

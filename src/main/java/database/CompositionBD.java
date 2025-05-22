@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CompositionBD extends DatabaseManager {
 
-    public int insertComposition(String name, String style, int duration, String author, String lyrics, String audiopath) {
+    public static int insertComposition(String name, String style, int duration, String author, String lyrics, String audiopath) {
         String sql = "INSERT INTO compositions (name, style, duration, author, lyrics, audiopath) VALUES (?, ?, ?, ?, ?, ?)";
         int generatedId = -1;
 

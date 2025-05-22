@@ -1,96 +1,58 @@
 package commands;
-
-import composition.ComposCollection;
-import database.CompositionBD;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import composition.Composition;
 import org.junit.jupiter.api.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class SortingByStyleTest {
-    private ByteArrayInputStream testIn;
-    private ByteArrayOutputStream testOut;
 
-    private ComposCollection collection;
-    private SortingByStyle sortingByStyle;
-
-    @BeforeEach
-    void setUp() {
-        collection = mock(ComposCollection.class);
-        testOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(testOut));
-    }
-
-    @AfterEach
-    void tearDown() {
-        System.setOut(System.out);
+    @Test
+    void sort_shouldReturnNull_whenListIsEmpty() {
+        SortingByStyle sorter = new SortingByStyle();
+        List<Composition> emptyList = new ArrayList<>();
+        List<Composition> result = sorter.sort(emptyList, "По алфавіту");
+        assertNull(result);
     }
 
     @Test
-    void testExecuteEmptyCollection() {
-        when(collection.isEmpty()).thenReturn(true);
+    void sort_shouldSortAlphabetically_whenSelected() {
+        SortingByStyle sorter = new SortingByStyle();
+        List<Composition> list = new ArrayList<>();
+        list.add(new Composition(1, "B", "Rock", 100, "Author", "Lyrics", "Path"));
+        list.add(new Composition(2, "A", "Jazz", 200, "Author", "Lyrics", "Path"));
+        list.add(new Composition(3, "C", "Electronic", 300, "Author", "Lyrics", "Path"));
 
-        testIn = new ByteArrayInputStream("".getBytes());
-        Scanner scanner = new Scanner(testIn);
-        sortingByStyle = new SortingByStyle(collection, scanner);
-        sortingByStyle.execute();
+        List<Composition> result = sorter.sort(list, "По алфавіту");
 
-        String output = testOut.toString();
-        assertTrue(output.contains("The collection is empty."));
+        assertEquals("Electronic", result.get(0).getStyle());
+        assertEquals("Jazz", result.get(1).getStyle());
+        assertEquals("Rock", result.get(2).getStyle());
     }
 
     @Test
-    void testExecuteSortAlphabetically() {
-        when(collection.isEmpty()).thenReturn(false);
+    void sort_shouldSortInReverseOrder_whenSelected() {
+        SortingByStyle sorter = new SortingByStyle();
+        List<Composition> list = new ArrayList<>();
+        list.add(new Composition(1, "A", "Electronic", 300, "Author", "Lyrics", "Path"));
+        list.add(new Composition(2, "B", "Jazz", 200, "Author", "Lyrics", "Path"));
+        list.add(new Composition(3, "C", "Rock", 100, "Author", "Lyrics", "Path"));
 
-        List<CompositionBD> compositions = new ArrayList<>();
-        compositions.add(new CompositionBD("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
-        compositions.add(new CompositionBD("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
+        List<Composition> result = sorter.sort(list, "У зворотному порядку");
 
-        when(collection.getCompositions()).thenReturn(compositions);
-
-        testIn = new ByteArrayInputStream("1".getBytes());
-        Scanner scanner = new Scanner(testIn);
-        sortingByStyle = new SortingByStyle(collection, scanner);
-        sortingByStyle.execute();
-
-        verify(collection, times(1)).getCompositions();
-        assertEquals("Classical", compositions.get(0).getStyle());
-        assertEquals("Romantic", compositions.get(1).getStyle());
-
-        String output = testOut.toString();
-        assertTrue(output.contains("Compositions sorted alphabetically."));
+        assertEquals("Rock", result.get(0).getStyle());
+        assertEquals("Jazz", result.get(1).getStyle());
+        assertEquals("Electronic", result.get(2).getStyle());
     }
 
     @Test
-    void testExecuteSortReverseAlphabetically() {
-        when(collection.isEmpty()).thenReturn(false);
+    void sort_shouldReturnNull_whenSelectedIsNull() {
+        SortingByStyle sorter = new SortingByStyle();
+        List<Composition> list = new ArrayList<>();
+        list.add(new Composition(1, "X", "Pop", 150, "Author", "Lyrics", "Path"));
 
-        List<CompositionBD> compositions = new ArrayList<>();
-        compositions.add(new CompositionBD("Symphony No.5", "Classical", "Beethoven", 1800, "Lyrics..."));
-        compositions.add(new CompositionBD("Piano Concerto No.21", "Romantic", "Mozart", 1800, "Lyrics..."));
+        List<Composition> result = sorter.sort(list, null);
 
-        when(collection.getCompositions()).thenReturn(compositions);
-
-        testIn = new ByteArrayInputStream("2".getBytes());
-        Scanner scanner = new Scanner(testIn);
-        sortingByStyle = new SortingByStyle(collection, scanner);
-        sortingByStyle.execute();
-
-        verify(collection, times(1)).getCompositions();
-        assertEquals("Romantic", compositions.get(0).getStyle());
-        assertEquals("Classical", compositions.get(1).getStyle());
-
-        String output = testOut.toString();
-        assertTrue(output.contains("Compositions sorted in reverse alphabetical order."));
+        assertNull(result);
     }
 }

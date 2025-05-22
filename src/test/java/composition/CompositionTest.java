@@ -1,38 +1,36 @@
 package composition;
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CompositionTest {
-    private Composition composition;
 
-    @BeforeEach
-    void setUp() {
-        composition = new Composition(
-                "Symphony No.5",
-                "Classical",
-                "Ludwig van Beethoven",
-                1800,
-                "Fate motif lyrics..."
-        );
+    @Test
+    void testEmptyConstructor() {
+        Composition composition = new Composition();
+        assertNull(composition.getName());
+        assertNull(composition.getStyle());
+        assertEquals(0, composition.getDuration());
+        assertNull(composition.getAuthor());
+        assertNull(composition.getLyrics());
+        assertNull(composition.getAudioPath());
     }
 
     @Test
-    void testConstructorAndGetters() {
-        assertEquals("Symphony No.5", composition.getCompositionName(), "Composition name should match");
-        assertEquals("Classical", composition.getStyle(), "Composition style should match");
-        assertEquals("Ludwig van Beethoven", composition.getAuthor(), "Author should match");
-        assertEquals(1800, composition.getComposDuration(), "Composition duration should match");
-        assertEquals("Fate motif lyrics...", composition.getLyrics(), "Lyrics should match");
+    void testCompositionFields() {
+        Composition composition = new Composition(1, "Title", "Jazz", 200, "Composer", "Lyrics", "/music/audio.mp3");
+
+        assertEquals("Title", composition.getName());
+        assertEquals("Jazz", composition.getStyle());
+        assertEquals(200, composition.getDuration());
+        assertEquals("Composer", composition.getAuthor());
+        assertEquals("Lyrics", composition.getLyrics());
+        assertEquals("/music/audio.mp3", composition.getAudioPath());
     }
 
     @Test
     void testToString() {
-        String expectedSeparator = "+----------------------+-----------------+-----------------+------------+--------------------------------+";
-        String expectedContent = String.format("| %-20s | %-15s | %-15s | %-10s | %-30s |%n",
-                "Symphony No.5", "Classical", "Ludwig van Beethoven", "1800 s", "Fate motif lyrics...") + expectedSeparator;
-
-        assertEquals(expectedContent, composition.toString(), "toString method should return expected format");
+        Composition composition = new Composition(1, "Title", "Jazz", 200, "Composer", "Lyrics", "/music/audio.mp3");
+        String expected = "Composition{id=1, name='Title', style='Jazz', duration=200, author='Composer', lyrics='Lyrics', audioPath='/music/audio.mp3'}";
+        assertEquals(expected, composition.toString());
     }
 }

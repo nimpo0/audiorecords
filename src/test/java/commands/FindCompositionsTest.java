@@ -1,87 +1,80 @@
 package commands;
-
-import org.junit.jupiter.api.AfterEach;
+import composition.Composition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import composition.ComposCollection;
-import composition.Composition;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
-
+import org.mockito.Mockito;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class FindCompositionsTest {
+class FindCompositionsTest {
 
-    private ByteArrayInputStream testIn;
-    private ByteArrayOutputStream testOut;
-
-    private ComposCollection allCompos;
-    private FindCompositions findCompositions;
+    private FindCompositions finder;
 
     @BeforeEach
-    public void setUp() {
-        allCompos = new ComposCollection();
-        testOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(testOut));
-    }
+    void setUp() {
+        finder = Mockito.spy(new FindCompositions() {
+            @Override
+            protected int[] showDurationInputDialog() {
+                return new int[]{100, 300};
+            }
 
-    @AfterEach
-    public void tearDown() {
-        System.setOut(System.out);
-    }
-
-    @Test
-    public void testEmptyCollection() {
-        String userInput = "60\n300\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
-
-        findCompositions = new FindCompositions(allCompos, scanner);
-        findCompositions.execute();
-
-        String output = testOut.toString();
-        assertTrue(output.contains("The collection is empty."),
-                "Should indicate the collection is empty.");
+            @Override
+            protected void showStyledMessage(String message) {
+            }
+        });
     }
 
     @Test
-    public void testInvalidMinDurationInput() {
-        Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompos.addToAllCompositions(comp);
-
-        String userInput = "-10\n60\n600\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
-
-        findCompositions = new FindCompositions(allCompos, scanner);
-        findCompositions.execute();
-
-        String output = testOut.toString();
-        assertTrue(output.contains("Duration cannot be negative. Please try again."),
-                "Should prompt for valid min duration.");
-
-        assertTrue(output.contains("Symphony No.9"), "The composition should be found after correct input.");
+    void findInRange_shouldReturnNull_whenListIsEmpty() {
+        List<Composition> emptyList = new ArrayList<>();
+        List<Composition> result = finder.findInRange(emptyList);
+        assertNull(result);
+        verify(finder).showStyledMessage("У базі немає композицій.");
     }
 
     @Test
-    public void testInvalidMaxDurationInput() {
-        Composition comp = new Composition("Symphony No.9", "Classical", "Beethoven", 600, "No lyrics");
-        allCompos.addToAllCompositions(comp);
+    void findInRange_shouldReturnNull_whenInputIsCancelled() {
+        FindCompositions cancellingFinder = Mockito.spy(new FindCompositions() {
+            @Override
+            protected int[] showDurationInputDialog() {
+                return null;
+            }
 
-        String userInput = "60\nabc\n30\n700\n";
-        testIn = new ByteArrayInputStream(userInput.getBytes());
-        Scanner scanner = new Scanner(testIn);
+            @Override
+            protected void showStyledMessage(String message) {
+            }
+        });
 
-        findCompositions = new FindCompositions(allCompos, scanner);
-        findCompositions.execute();
+        List<Composition> list = List.of(new Composition(1, "Test", "Rock", 150, "Author", "Lyrics", "Path"));
+        List<Composition> result = cancellingFinder.findInRange(list);
+        assertNull(result);
+    }
 
-        String output = testOut.toString();
-        assertTrue(output.contains("Invalid input, please enter a whole number."),
-                "Should prompt for valid max duration.");
+    @Test
+    void findInRange_shouldReturnMatchingCompositions() {
+        List<Composition> list = List.of(
+                new Composition(1, "C1", "Rock", 90, "Author", "Lyrics", "Path"),
+                new Composition(2, "C2", "Jazz", 150, "Author", "Lyrics", "Path"),
+                new Composition(3, "C3", "Pop", 310, "Author", "Lyrics", "Path")
+        );
 
-        assertTrue(output.contains("Symphony No.9"), "The composition should be found after correct input.");
+        List<Composition> result = finder.findInRange(list);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Jazz", result.get(0).getStyle());
+    }
+
+    @Test
+    void findInRange_shouldReturnNull_ifNoMatchesFound() {
+        List<Composition> list = List.of(
+                new Composition(1, "C1", "Rock", 50, "Author", "Lyrics", "Path"),
+                new Composition(2, "C2", "Jazz", 60, "Author", "Lyrics", "Path")
+        );
+
+        List<Composition> result = finder.findInRange(list);
+        assertNull(result);
+        verify(finder).showStyledMessage("Композицій у заданому діапазоні не знайдено.");
     }
 }
