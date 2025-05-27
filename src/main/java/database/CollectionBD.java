@@ -1,11 +1,15 @@
 package database;
 import composition.Collection;
 import composition.Composition;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollectionBD extends DatabaseManager {
+    private static final Logger logger = LogManager.getLogger(CollectionBD.class);
+    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
     public void insertCollection(String name) {
         String sql = "INSERT INTO collections (name) VALUES (?)";
@@ -13,9 +17,9 @@ public class CollectionBD extends DatabaseManager {
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.executeUpdate();
-            System.out.println("Collection inserted successfully");
+            logger.info("Колекцію '{}' успішно додано до бази даних.", name);
         } catch (SQLException e) {
-            System.err.println("Error inserting collection: " + e.getMessage());
+            errorLogger.error("Помилка під час додавання колекції '{}': {}", name, e.getMessage(), e);
         }
     }
 
@@ -26,12 +30,12 @@ public class CollectionBD extends DatabaseManager {
             pstmt.setString(1, name);
             int affected = pstmt.executeUpdate();
             if (affected > 0) {
-                System.out.println("Collection deleted successfully");
+                logger.info("Колекцію '{}' успішно видалено з бази даних.", name);
             } else {
-                System.out.println("No collection found with that name.");
+                logger.warn("Колекцію '{}' не знайдено для видалення.", name);
             }
         } catch (SQLException e) {
-            System.err.println("Error deleting collection: " + e.getMessage());
+            errorLogger.error("Помилка під час видалення колекції '{}': {}", name, e.getMessage(), e);
         }
     }
 
@@ -50,7 +54,8 @@ public class CollectionBD extends DatabaseManager {
                 list.add(col);
             }
         } catch (SQLException e) {
-            System.err.println("Error reading collections: " + e.getMessage());
+            Logger errorLogger = LogManager.getLogger("ErrorLogger");
+            errorLogger.error("Помилка під час зчитування колекцій: {}", e.getMessage(), e);
         }
         return list;
     }
@@ -82,9 +87,9 @@ public class CollectionBD extends DatabaseManager {
                     compositions.add(composition);
                 }
             }
-
+            logger.info("Знайдено {} композицій у колекції '{}'.", compositions.size(), collectionName);
         } catch (SQLException e) {
-            System.err.println("Error fetching compositions for collection '" + collectionName + "': " + e.getMessage());
+            errorLogger.error("Помилка при отриманні композицій для колекції '{}': {}", collectionName, e.getMessage(), e);
         }
 
         return compositions;

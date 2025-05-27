@@ -20,7 +20,6 @@ public class FindCompositions {
     public List<Composition> findInRange(List<Composition> allCompositions) {
         if (allCompositions.isEmpty()) {
             showStyledMessage("У базі немає композицій.");
-            logger.warn("Пошук композицій база порожня.");
             return null;
         }
 

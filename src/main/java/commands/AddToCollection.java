@@ -41,7 +41,7 @@ public class AddToCollection implements Command {
             int collectionId = relationBD.getCollectionIdByName(collectionName);
             if (collectionId == -1) {
                 showStyledMessage("Колекція не знайдена", "Колекції з назвою '" + collectionName + "' не існує.");
-                errorLogger.error("Collection '{}' not found.", collectionName);
+                errorLogger.error("Колекція з назвою '{}' не знайдена.", collectionName);
                 return;
             }
 
@@ -74,11 +74,11 @@ public class AddToCollection implements Command {
             }
 
             relationBD.addCompositionToCollection(compositionName, collectionName);
-            logger.info("Composition '{}' added to collection '{}'.", compositionName, collectionName);
+            logger.info("Композицію '{}' додано до колекції '{}'.", compositionName, collectionName);
             showStyledMessage("Успішно", "Композиція '" + compositionName + "' додана до колекції '" + collectionName + "'.");
 
         } catch (Exception e) {
-            errorLogger.error("Error while adding to collection: {}", e.getMessage(), e);
+            errorLogger.error("Помилка під час додавання до колекції: {}", e.getMessage(), e);
             showStyledMessage("Помилка", "Сталася помилка: " + e.getMessage());
         }
     }

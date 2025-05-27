@@ -110,16 +110,16 @@ public class AddCompos implements Command {
                 int newId = CompositionBD.insertComposition(name, style, duration, author, lyrics, audioPath);
 
                 if (newId != -1) {
-                    logger.info("Composition '{}' successfully added with ID {}", name, newId);
+                    logger.info("Композицію '{}' успішно додано з ID {}", name, newId);
                     showAlert("Композицію успішно додано!");
                 } else {
                     showAlert("Не вдалося додати композицію.");
                 }
             } catch (NumberFormatException ex) {
                 showAlert("Некоректне число в полі тривалості.");
-                errorLogger.error("Invalid duration input: {}", ex.getMessage(), ex);
+                errorLogger.error("Некоректне значення тривалості: {}", ex.getMessage(), ex);
             } catch (Exception ex) {
-                errorLogger.error("Error while adding composition: {}", ex.getMessage(), ex);
+                errorLogger.error("Помилка під час додавання композиції: {}", ex.getMessage(), ex);
                 showAlert("Виникла помилка при додаванні композиції.");
             }
         });

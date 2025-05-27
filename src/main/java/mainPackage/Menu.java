@@ -1,5 +1,7 @@
 package mainPackage;
 import commands.*;
+import file.DataExport;
+import file.DataImport;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
@@ -89,6 +91,8 @@ public class Menu extends Application {
                 {"📄 Показати всі композиції", "displayAll"},
                 {"🆕 Створити колекцію", "createCollection"},
                 {"📁 Переглянути колекцію", "displayCollection"},
+                {"📤 Імпортувати з JSON", "importJson"},
+                {"📥 Експортувати у JSON", "exportJson"},
                 {"💥 Критична помилка", "criticalError"}
         };
 
@@ -164,9 +168,11 @@ public class Menu extends Application {
         commandMap.put("addCompos", new AddCompos());
         commandMap.put("displayCollection", new DisplayCollection());
         commandMap.put("createCollection", new CreateCollection());
+        commandMap.put("importJson", new DataImport());
+        commandMap.put("exportJson", new DataExport());
     }
 
-    private void showAlert(String title, String message) {
+    public void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);

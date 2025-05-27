@@ -19,7 +19,6 @@ public class SortingByStyle {
     public List<Composition> sort(List<Composition> compositions) {
         if (compositions.isEmpty()) {
             showStyledMessage("У базі даних немає композицій.");
-            logger.warn("Сортування база порожня.");
             return null;
         }
 
@@ -29,7 +28,6 @@ public class SortingByStyle {
 
     public List<Composition> sort(List<Composition> compositions, String selected) {
         if (compositions == null || compositions.isEmpty()) {
-            logger.warn("Сортування база порожня.");
             return null;
         }
         if (selected == null) return null;

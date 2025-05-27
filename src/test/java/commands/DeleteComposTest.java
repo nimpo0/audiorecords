@@ -27,8 +27,8 @@ class DeleteComposTest {
         deleteCompos.execute();
 
         mockedCompositionBD.verify(() -> CompositionBD.deleteComposition("TestSong"));
-        assertEquals("Успішно", deleteCompos.alertTitle);
-        assertTrue(deleteCompos.alertContent.contains("видалена"));
+        assertEquals("Успіх", deleteCompos.alertTitle);
+        assertTrue(deleteCompos.alertContent.contains("видалено"));
     }
 
     @Test
@@ -59,7 +59,7 @@ class DeleteComposTest {
     void testPrintInfo() {
         DeleteCompos deleteCompos = new DeleteCompos("AnySong");
         String info = deleteCompos.printInfo();
-        assertEquals("Delete a specific composition from the database.", info);
+        assertEquals("Видалити вказану композицію з бази даних.", info);
     }
 
     private static class TestableDeleteCompos extends DeleteCompos {

@@ -224,6 +224,7 @@ public class DisplayAllCompos implements Command {
                 }
             } catch (Exception ex) {
                 showMessage("Помилка при відтворенні аудіо.");
+                logger.error("Помилка при відтворенні аудіо.");
             }
         });
 

@@ -15,6 +15,6 @@ class CriticalErrorTest {
     @Test
     void testPrintInfo_ReturnsCorrectString() {
         CriticalError cmd = new CriticalError();
-        assertEquals("Trigger critical error (for email notifications)", cmd.printInfo());
+        assertEquals("Симулювати критичну помилку (для перевірки email-сповіщень)", cmd.printInfo());
     }
 }

@@ -62,9 +62,6 @@ public class DisplayCollectionUITest extends BaseFxTest {
 
     @Test
     public void testDisplayCollectionsUI() {
-        lookup(node -> node instanceof Label).queryAll().forEach(node -> {
-            System.out.println(((Label) node).getText());
-        });
 
         Set<Node> labels = lookup(node -> node instanceof Label).queryAll();
 

@@ -1,7 +1,11 @@
 package database;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.sql.*;
 
 public class CollectionCompositionBD extends DatabaseManager {
+    private static final Logger logger = LogManager.getLogger(CollectionCompositionBD.class);
+    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
     private int getIdByName(String tableName, String name) {
         String sql = "SELECT id FROM " + tableName + " WHERE name = ?";
@@ -22,9 +26,9 @@ public class CollectionCompositionBD extends DatabaseManager {
 
             }
         } catch (ClassNotFoundException e) {
-            System.err.println("PostgreSQL Driver not found: " + e.getMessage());
+            errorLogger.error("Драйвер PostgreSQL не знайдено: {}", e.getMessage(), e);
         } catch (SQLException e) {
-            System.err.println("Error retrieving id from " + tableName + ": " + e.getMessage());
+            errorLogger.error("Помилка при отриманні id з таблиці '{}': {}", tableName, e.getMessage(), e);
         }
 
         return id;
@@ -43,7 +47,7 @@ public class CollectionCompositionBD extends DatabaseManager {
         int collectionId = getCollectionIdByName(collectionName);
 
         if (compositionId == -1 || collectionId == -1) {
-            System.out.println("Composition or collection not found.");
+            logger.warn("Композицію або колекцію не знайдено ({} / {}).", compositionName, collectionName);
             return;
         }
 
@@ -53,9 +57,9 @@ public class CollectionCompositionBD extends DatabaseManager {
             pstmt.setInt(1, compositionId);
             pstmt.setInt(2, collectionId);
             pstmt.executeUpdate();
-            System.out.println("Composition added to collection successfully.");
+            logger.info("Композицію '{}' успішно додано до колекції '{}'.", compositionName, collectionName);
         } catch (SQLException e) {
-            System.err.println("Error adding composition to collection: " + e.getMessage());
+            errorLogger.error("Помилка при додаванні композиції до колекції: {}", e.getMessage(), e);
         }
     }
 
@@ -64,7 +68,7 @@ public class CollectionCompositionBD extends DatabaseManager {
         int collectionId = getCollectionIdByName(collectionName);
 
         if (compositionId == -1 || collectionId == -1) {
-            System.out.println("Composition or collection not found.");
+            logger.warn("Композицію або колекцію не знайдено для видалення ({} / {}).", compositionName, collectionName);
             return;
         }
 
@@ -74,9 +78,9 @@ public class CollectionCompositionBD extends DatabaseManager {
             pstmt.setInt(1, compositionId);
             pstmt.setInt(2, collectionId);
             pstmt.executeUpdate();
-            System.out.println("Composition removed from collection.");
+            logger.info("Композицію '{}' видалено з колекції '{}'.", compositionName, collectionName);
         } catch (SQLException e) {
-            System.err.println("Error removing composition from collection: " + e.getMessage());
+            errorLogger.error("Помилка при видаленні композиції з колекції: {}", e.getMessage(), e);
         }
     }
 }

@@ -1,10 +1,14 @@
 package database;
 import composition.Composition;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompositionBD extends DatabaseManager {
+    private static final Logger logger = LogManager.getLogger(CompositionBD.class);
+    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
     public static int insertComposition(String name, String style, int duration, String author, String lyrics, String audiopath) {
         String sql = "INSERT INTO compositions (name, style, duration, author, lyrics, audiopath) VALUES (?, ?, ?, ?, ?, ?)";
@@ -27,10 +31,12 @@ public class CompositionBD extends DatabaseManager {
                 if (rs.next()) {
                     generatedId = rs.getInt(1);
                 }
+                logger.info("Композицію '{}' успішно додано до бази, id = {}", name, generatedId);
+            } else {
+                logger.warn("Композицію '{}' не вдалося додати до бази", name);
             }
-            System.out.println("✔ Composition inserted successfully");
         } catch (SQLException e) {
-            System.err.println("Error inserting composition: " + e.getMessage());
+            errorLogger.error("Помилка при додаванні композиції '{}': {}", name, e.getMessage(), e);
         }
 
         return generatedId;
@@ -44,8 +50,14 @@ public class CompositionBD extends DatabaseManager {
             pstmt.setString(1, name);
             int affected = pstmt.executeUpdate();
             deleted = affected > 0;
+
+            if (deleted) {
+                logger.info("Композицію '{}' успішно видалено з бази.", name);
+            } else {
+                logger.warn("Композицію '{}' не знайдено для видалення.", name);
+            }
         } catch (SQLException e) {
-            System.err.println("Error deleting composition: " + e.getMessage());
+            errorLogger.error("Помилка при видаленні композиції '{}': {}", name, e.getMessage(), e);
         }
 
         return deleted;
@@ -70,8 +82,9 @@ public class CompositionBD extends DatabaseManager {
                 );
                 list.add(comp);
             }
+            logger.info("Зчитано {} композицій з бази даних.", list.size());
         } catch (SQLException e) {
-            System.err.println("Error reading compositions: " + e.getMessage());
+            errorLogger.error("Помилка при зчитуванні композицій: {}", e.getMessage(), e);
         }
         return list;
     }

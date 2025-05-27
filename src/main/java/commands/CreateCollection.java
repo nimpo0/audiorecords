@@ -11,9 +11,13 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import mainPackage.Menu;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 
 public class CreateCollection implements Command {
+    private static final Logger logger = LogManager.getLogger(CreateCollection.class);
+    private static final Logger errorLogger = LogManager.getLogger("ErrorLogger");
 
     private final CollectionBD collectionBD;
     private TextField collectionNameField;
@@ -36,14 +40,21 @@ public class CreateCollection implements Command {
     public void handleCollectionCreation(String collectionName) {
         String name = collectionName.trim();
         if (name.isEmpty()) {
+            logger.warn("Спроба створення колекції з порожньою назвою.");
             showAlert("Введіть назву колекції.");
             return;
         }
 
-        collectionBD.insertCollection(name);
-        showAlert("Колекцію '" + name + "' успішно створено.");
-        if (collectionNameField != null) {
-            collectionNameField.clear();
+        try {
+            collectionBD.insertCollection(name);
+            logger.info("Колекцію '{}' успішно створено.", name);
+            showAlert("Колекцію '" + name + "' успішно створено.");
+            if (collectionNameField != null) {
+                collectionNameField.clear();
+            }
+        } catch (Exception e) {
+            errorLogger.error("Помилка при створенні колекції '{}': {}", name, e.getMessage(), e);
+            showAlert("Помилка при створенні колекції: " + e.getMessage());
         }
     }
 
